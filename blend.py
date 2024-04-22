@@ -37,7 +37,7 @@ class Blend:
                     "min": 0.0,
                     "max": 1.0,
                     "step": 0.01,
-                    "round": 0.001, #The value represeting the precision to round to, will be set to the step value by default. Can be set to False to disable rounding.
+                    "round": 0.001, 
                     "display": "number"}),
                 "source_adjust": (["crop", "stretch"],),
                 "blend_mode": (["difference", "normal", "soft_light", "lighten_only", "dodge","addition",
@@ -52,31 +52,20 @@ class Blend:
     
     def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode):
 
-        # Ensure images are RGBA
+        # Ensure images are in the correct form and data type
         backdrop_prepped = prep_image(backdrop)
         source_prepped = prep_image(source)
 
-        # Size source image, according to preference
+        # Size source image to backdrop image, according to preference
         source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
 
         # Apply the blend mode
         blended_np = modes[blend_mode](backdrop_prepped, source_prepped, opacity)
 
+        # return the image to Pytorch with proper shape
         final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
 
         return (final_tensor,)
-
-    """
-        The node will always be re executed if any of the inputs change but
-        this method can be used to force the node to execute again even when the inputs don't change.
-        You can make this node return a number or a string. This value will be compared to the one returned the last time the node was
-        executed, if it is different the node will be executed again.
-        This method is used in the core repo for the LoadImage node where they return the image hash as a string, if the image hash
-        changes between executions the LoadImage node is executed again.
-    """
-    #@classmethod
-    #def IS_CHANGED(s, image, string_field, int_field, float_field, print_to_screen):
-    #    return ""
 
 def prep_image(img):
     # Check if the image has a batch dimension and if so, remove it
@@ -86,7 +75,7 @@ def prep_image(img):
     # Convert image from 0-1 to 0-255 data
     img = img * 255
 
-    # Check if the image has an alpha channel
+    # Make sure the image has an alpha channel
     if img.shape[2] == 4:
         return img
     elif img.shape[2] == 3:
