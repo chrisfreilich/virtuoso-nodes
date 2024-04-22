@@ -33,8 +33,11 @@ class Blend:
     def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode):
 
         # Ensure images are RGBA
-        backdrop_rgba = Image.fromarray(backdrop).convert('RGBA')
-        source_rgba = Image.fromarray(source).convert('RGBA')
+        # backdrop_rgba = Image.fromarray(backdrop).convert('RGBA')
+        # source_rgba = Image.fromarray(source).convert('RGBA')
+
+        backdrop_rgba = backdrop.convert('RGBA')
+        source_rgba = source.convert('RGBA')
 
         # Size source image
         width, height = backdrop_rgba.size
@@ -50,12 +53,8 @@ class Blend:
         # Convert the result to an 8-bit array and make an image from it
         blended_image = Image.fromarray(blended_array.astype(np.uint8))
 
-        # Save the manipulated image
-        blended_image.save("output.png")
-
         #do some processing on the image, in this example I just invert it
-        image = 1.0 - image
-        return (image,)
+        return (blended_image,)
 
     """
         The node will always be re executed if any of the inputs change but
