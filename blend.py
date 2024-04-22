@@ -22,8 +22,8 @@ class Blend:
                     "step": 0.01,
                     "round": 0.001, #The value represeting the precision to round to, will be set to the step value by default. Can be set to False to disable rounding.
                     "display": "number"}),
-                "source_adjust": (["crop", "squeeze"],),
-                "blend_mode": (["difference"],),
+                "source_adjust": (["crop", "stretch"],),
+                "blend_mode": (["difference", "soft_light", "lighten_only", "dodge"],),
             },
         }
 
@@ -37,12 +37,11 @@ class Blend:
         backdrop_prepped = prep_image(backdrop)
         source_prepped = prep_image(source)
 
-        # Size source image
-        # width, height = backdrop_rgba.size
-        # source_rgba = source_rgba.resize((width, height))
+        # Size source image, according to preference
+        source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
 
         # Apply the blend mode
-        blended_np = difference(backdrop_prepped, source_prepped, opacity=1)
+        blended_np = difference(backdrop_prepped, source_prepped, opacity)
 
         final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
 
@@ -82,3 +81,55 @@ def prep_image(img):
         return img_with_alpha.numpy()
     else:
         raise ValueError("Input image must have either 3 (RGB) or 4 (RGBA) channels")
+    
+def resize_image(background, source, method):
+    # Convert numpy arrays to PIL Images
+    # Convert the data type to uint8 before converting to PIL Image
+    background = Image.fromarray(background.astype(np.uint8))
+    source = Image.fromarray(source.astype(np.uint8))
+
+    # Get the size of the background image
+    bg_width, bg_height = background.size
+
+    if method == 'stretch':
+        # Resize the source image to match the size of the background image
+        resized_source = source.resize((bg_width, bg_height))
+
+    elif method == 'crop':
+        # Calculate the aspect ratio of the source and background images
+        src_ratio = source.width / source.height
+        bg_ratio = bg_width / bg_height
+
+        if src_ratio > bg_ratio:
+            # If source aspect ratio is greater than background aspect ratio,
+            # resize source height to match background height and adjust width
+            # to maintain aspect ratio
+            new_height = bg_height
+            new_width = int(new_height * src_ratio)
+        else:
+            # If source aspect ratio is less than or equal to background aspect ratio,
+            # resize source width to match background width and adjust height
+            # to maintain aspect ratio
+            new_width = bg_width
+            new_height = int(new_width / src_ratio)
+
+        # Resize the source image
+        resized_source = source.resize((new_width, new_height))
+
+        # Calculate the area to crop
+        left = (resized_source.width - bg_width) / 2
+        top = (resized_source.height - bg_height) / 2
+        right = (resized_source.width + bg_width) / 2
+        bottom = (resized_source.height + bg_height) / 2
+
+        # Crop the resized source image
+        resized_source = resized_source.crop((left, top, right, bottom))
+
+    else:
+        raise ValueError("Invalid method. Choose either 'stretch' or 'crop'.")
+
+    # Convert the resized source image back to a numpy array
+    # Convert the data type back to float before returning
+    resized_source = np.array(resized_source, dtype=np.float32)
+
+    return resized_source
