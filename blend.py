@@ -69,10 +69,3 @@ class Blend:
     #def IS_CHANGED(s, image, string_field, int_field, float_field, print_to_screen):
     #    return ""
 
-NODE_CLASS_MAPPINGS = {
-    "Blend": Blend
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "Blend": "Blend Modes Node"
-}
