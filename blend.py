@@ -1,7 +1,24 @@
 from PIL import Image
 import numpy as np
-from blend_modes import difference
+from blend_modes import difference, normal, soft_light, lighten_only, dodge, addition, darken_only, multiply, hard_light, subtract, grain_extract, grain_merge, divide, overlay
 import torch
+
+modes = {
+    "difference": difference, 
+    "normal": normal, 
+    "soft_light": soft_light, 
+    "lighten_only": lighten_only, 
+    "dodge": dodge,
+    "addition": addition,
+    "darken_only": darken_only,
+    "multiply": multiply,
+    "hard_light": hard_light,
+    "subtract": subtract, 
+    "grain_extract": grain_extract,
+    "grain_merge": grain_merge, 
+    "divide": divide, 
+    "overlay": overlay
+}
 
 class Blend:
     
@@ -23,7 +40,9 @@ class Blend:
                     "round": 0.001, #The value represeting the precision to round to, will be set to the step value by default. Can be set to False to disable rounding.
                     "display": "number"}),
                 "source_adjust": (["crop", "stretch"],),
-                "blend_mode": (["difference", "soft_light", "lighten_only", "dodge"],),
+                "blend_mode": (["difference", "normal", "soft_light", "lighten_only", "dodge","addition",
+                                "darken_only", "multiply","hard_light","subtract", "grain_extract",
+                                "grain_merge", "divide", "overlay"],),
             },
         }
 
@@ -41,7 +60,7 @@ class Blend:
         source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
 
         # Apply the blend mode
-        blended_np = difference(backdrop_prepped, source_prepped, opacity)
+        blended_np = modes[blend_mode](backdrop_prepped, source_prepped, opacity)
 
         final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
 
