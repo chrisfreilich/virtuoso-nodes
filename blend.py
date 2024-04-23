@@ -43,7 +43,7 @@ class Blend:
                     "round": 0.001, 
                     "display": "number"}),
                 "source_adjust": (["crop", "stretch"],),
-                "blend_mode": (["difference", "normal", "soft_light", "lighten_only", "dodge","addition",
+                "blend_mode": (["difference", "normal", "screen", "soft_light", "lighten_only", "dodge","addition",
                                 "darken_only", "multiply","hard_light","subtract", "grain_extract",
                                 "grain_merge", "divide", "overlay"],),
             },
