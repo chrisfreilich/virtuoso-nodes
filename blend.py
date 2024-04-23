@@ -5,6 +5,9 @@ from blend_modes import difference, normal, screen, soft_light, lighten_only, do
                         grain_extract, grain_merge, divide, overlay
 import torch
 
+def subtract_custom(background, source, opacity):
+    return background - (source * opacity)
+
 modes = {
     "difference": difference, 
     "normal": normal, 
@@ -16,7 +19,7 @@ modes = {
     "darken_only": darken_only,
     "multiply": multiply,
     "hard_light": hard_light,
-    "subtract": subtract, 
+    "subtract": subtract_custom, 
     "grain_extract": grain_extract,
     "grain_merge": grain_merge, 
     "divide": divide, 
@@ -144,3 +147,4 @@ def resize_image(background, source, method):
     resized_source = np.array(resized_source, dtype=np.float32)
 
     return resized_source
+
