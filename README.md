@@ -1,6 +1,6 @@
 # Virtuoso ComfyUI Blend Modes Node
 
-This node takes two images and applies a blending mode to them. It was initially intended for use in difference mode to help judge differences between two processes like two different upscalers. All the blending modes have good use cases, so all are included here. Some examples:
+This node extends the functionality of the built-in Blend node by including many more blend modes, and including a scaling option for the top layer.
 
 **Difference Mode**
 ![Difference Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/9cee4442-c65a-4025-9a7d-ab6f60a76197)
@@ -16,6 +16,9 @@ This node takes two images and applies a blending mode to them. It was initially
 
 **Lighten Mode**
 ![Lighten Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/ac05104d-6d64-4084-a44c-a78b51745ce9)
+
+**Dodge Mode**
+![Dodge Blending Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/747899e7-896d-49cc-af4f-8c914bb3ea8c)
 
 **Hard Light Mode**
 ![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
