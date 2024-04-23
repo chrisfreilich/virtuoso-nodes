@@ -23,21 +23,19 @@ This node extends the functionality of the built-in Blend node by including many
 **Addition (aka Linear Dodge) Mode**
 ![Addition Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/1d6c94c5-6b52-4a1f-a99b-f12b535d478c)
 
-**Darken Mode**
+**Darken Mode**  
 ![Darken Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/a4aeaf22-2758-461d-b899-41c982ce88d7)
 
 **Hard Light Mode**
 ![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
 
-**Grain Extract Mode**
-
+**Grain Extract Mode**  
 ![Grain Extract Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/13880223-3653-4eaa-b1e7-371c8fe07fc5)
 
 **Grain Merge Mode**
 ![Grain Merge Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0e1691e1-e92d-4282-8989-ac9e8281120e)
 
-**Overlay Mode**
-
+**Overlay Mode**  
 ![Overlay Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/de63d31c-99e9-434c-ad97-84767f9cac09)
 
 
