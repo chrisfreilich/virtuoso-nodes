@@ -2,7 +2,11 @@
 
 This node takes two images and applies a blending mode to them. Some examples:
 
-*Hard Light*
+**Screen Mode**
+![Screen Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
+
+
+**Hard Light Mode**
 ![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
 
 
