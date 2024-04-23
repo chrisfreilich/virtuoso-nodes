@@ -1,12 +1,99 @@
 from PIL import Image
 import numpy as np
+from colorsys import rgb_to_hsv, hsv_to_rgb
 from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
-                        addition, darken_only, multiply, hard_light, subtract, \
+                        addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 import torch
 
-def subtract_custom(background, source, opacity):
+def subtract(background, source, opacity):
     return background - (source * opacity)
+
+def saturation(backdrop, source, opacity):
+    # Convert RGBA to RGB
+    backdrop_rgb = backdrop[:, :, :3] / 255.0
+    source_rgb = source[:, :, :3] / 255.0
+
+    # Convert RGB to HSV
+    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
+    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
+
+    # Combine HSV values
+    new_hsv = backdrop_hsv.copy()
+    new_hsv[:, :, 1] = (1 - opacity) * backdrop_hsv[:, :, 1] + opacity * source_hsv[:, :, 1]
+
+    # Convert HSV back to RGB
+    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
+
+    # Convert RGB back to RGBA and scale to 0-255 range
+    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
+
+    return new_rgba.astype(np.uint8)
+
+def luminance(backdrop, source, opacity):
+    # Convert RGBA to RGB
+    backdrop_rgb = backdrop[:, :, :3] / 255.0
+    source_rgb = source[:, :, :3] / 255.0
+
+    # Convert RGB to HSV
+    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
+    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
+
+    # Combine HSV values
+    new_hsv = backdrop_hsv.copy()
+    new_hsv[:, :, 2] = (1 - opacity) * backdrop_hsv[:, :, 2] + opacity * source_hsv[:, :, 2]
+
+    # Convert HSV back to RGB
+    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
+
+    # Convert RGB back to RGBA and scale to 0-255 range
+    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
+
+    return new_rgba.astype(np.uint8)
+
+def hue(backdrop, source, opacity):
+    # Convert RGBA to RGB
+    backdrop_rgb = backdrop[:, :, :3] / 255.0
+    source_rgb = source[:, :, :3] / 255.0
+
+    # Convert RGB to HSV
+    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
+    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
+
+    # Combine HSV values
+    new_hsv = backdrop_hsv.copy()
+    new_hsv[:, :, 0] = (1 - opacity) * backdrop_hsv[:, :, 0] + opacity * source_hsv[:, :, 0]
+
+    # Convert HSV back to RGB
+    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
+
+    # Convert RGB back to RGBA and scale to 0-255 range
+    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
+
+    return new_rgba.astype(np.uint8)
+
+def color(backdrop, source, opacity):
+    # Convert RGBA to RGB
+    backdrop_rgb = backdrop[:, :, :3] / 255.0
+    source_rgb = source[:, :, :3] / 255.0
+
+    # Convert RGB to HSV
+    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
+    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
+
+    # Combine HSV values
+    new_hsv = backdrop_hsv.copy()
+    new_hsv[:, :, 0] = (1 - opacity) * backdrop_hsv[:, :, 0] + opacity * source_hsv[:, :, 0]
+    new_hsv[:, :, 1] = (1 - opacity) * backdrop_hsv[:, :, 1] + opacity * source_hsv[:, :, 1]
+
+    # Convert HSV back to RGB
+    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
+
+    # Convert RGB back to RGBA and scale to 0-255 range
+    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
+
+    return new_rgba.astype(np.uint8)
+
 
 modes = {
     "difference": difference, 
@@ -19,11 +106,15 @@ modes = {
     "darken_only": darken_only,
     "multiply": multiply,
     "hard_light": hard_light,
-    "subtract": subtract_custom, 
+    "subtract": subtract, 
     "grain_extract": grain_extract,
     "grain_merge": grain_merge, 
     "divide": divide, 
-    "overlay": overlay
+    "overlay": overlay,
+    "hue": hue,
+    "saturation": saturation,
+    "color": color,
+    "luminance": luminance
 }
 
 class Blend:
@@ -48,7 +139,7 @@ class Blend:
                 "source_adjust": (["crop", "stretch"],),
                 "blend_mode": (["difference", "normal", "screen", "soft_light", "lighten_only", "dodge","addition",
                                 "darken_only", "multiply","hard_light","subtract", "grain_extract",
-                                "grain_merge", "divide", "overlay"],),
+                                "grain_merge", "divide", "overlay", "hue", "saturation","color", "luminance"],),
             },
         }
 
@@ -147,4 +238,5 @@ def resize_image(background, source, method):
     resized_source = np.array(resized_source, dtype=np.float32)
 
     return resized_source
+
 
