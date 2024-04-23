@@ -4,7 +4,7 @@
 
 This is my first go at a custom Comfy node. I figured it would be useful to have a simple image difference node to see the effects of whatever process you're analyzing. Once that was done I figured why not allow any of the blend modes? So here it is!
 
-###Very simple controls:
+### Very simple controls:
 
 - backdrop: This is the background image. The output image will have the same dimensions as this image
 - source: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
@@ -14,9 +14,9 @@ This is my first go at a custom Comfy node. I figured it would be useful to have
      - Crop will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
 - blend_mode: difference is the default, but all the common blending modes are available.
 
-  ###Installation:
+### Installation:
 
-  1. Git clone this repo into a folder in ComfyUI\custom_nodes
-  2. pip install -r requirements.txt
- 
-  Please let me know if you have any thoughts or suggestions!
+1. Git clone this repo into a folder in ComfyUI\custom_nodes
+2. pip install -r requirements.txt
+
+Please let me know if you have any thoughts or suggestions!
