@@ -5,7 +5,7 @@ This node extends the functionality of the built-in Blend node by including many
 **Difference Mode**
 ![Difference Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/9cee4442-c65a-4025-9a7d-ab6f60a76197)
 
-**Normal Mode (50% Opacity)
+**Normal Mode (50% Opacity)**
 ![Normal Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e9a16322-a1bb-425d-ad2c-3d69dfd4b887)
 
 **Screen Mode**
