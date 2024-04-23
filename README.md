@@ -32,6 +32,10 @@ This node extends the functionality of the built-in Blend node by including many
 **Grain Merge Mode**
 ![Grain Merge Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0e1691e1-e92d-4282-8989-ac9e8281120e)
 
+**Overlay Mode**
+![Overlay Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/de63d31c-99e9-434c-ad97-84767f9cac09)
+
+
 
 ### Node controls:
 
