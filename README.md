@@ -1,8 +1,9 @@
 # Virtuoso ComfyUI Blend Modes Node
 
-![Blend Mode Example Image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/868f4c58-f7c8-44f3-b537-6c34b38b18db)
+This node takes two images and applies a blending mode to them. Some examples:
 
-This is my first go at a custom Comfy node. I figured it would be useful to have a simple image difference node to see the effects of whatever process you're analyzing. Once that was done I figured why not allow any of the blend modes? So here it is!
+![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
+
 
 ### Very simple controls:
 
