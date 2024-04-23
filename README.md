@@ -2,10 +2,11 @@
 
 This node takes two images and applies a blending mode to them. Some examples:
 
+*Hard Light*
 ![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
 
 
-### Very simple controls:
+### Node controls:
 
 - backdrop: This is the background image. The output image will have the same dimensions as this image
 - source: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
