@@ -1,11 +1,14 @@
 from PIL import Image
 import numpy as np
-from blend_modes import difference, normal, soft_light, lighten_only, dodge, addition, darken_only, multiply, hard_light, subtract, grain_extract, grain_merge, divide, overlay
+from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
+                        addition, darken_only, multiply, hard_light, subtract, \
+                        grain_extract, grain_merge, divide, overlay
 import torch
 
 modes = {
     "difference": difference, 
     "normal": normal, 
+    "screen": screen,
     "soft_light": soft_light, 
     "lighten_only": lighten_only, 
     "dodge": dodge,
