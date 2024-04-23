@@ -141,17 +141,20 @@ class Blend:
                                 "darken_only", "multiply","hard_light","subtract", "grain_extract",
                                 "grain_merge", "divide", "overlay", "hue", "saturation","color", "luminance"],),
             },
+            "optional": {
+                "mask": ("MASK",),
+            }
         }
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_blend"
     CATEGORY = "Virtuoso"
     
-    def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode):
+    def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode, mask=None):
 
         # Ensure images are in the correct form and data type
         backdrop_prepped = prep_image(backdrop)
-        source_prepped = prep_image(source)
+        source_prepped = prep_image(source, mask)
 
         # Size source image to backdrop image, according to preference
         source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
@@ -161,10 +164,10 @@ class Blend:
 
         # return the image to Pytorch with proper shape
         final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
-
+        
         return (final_tensor,)
 
-def prep_image(img):
+def prep_image(img, mask=None):
     # Check if the image has a batch dimension and if so, remove it
     if img.shape[0] == 1:
         img = img.squeeze(0)
@@ -173,19 +176,23 @@ def prep_image(img):
     img = img * 255
 
     # Make sure the image has an alpha channel
-    if img.shape[2] == 4:
-        return img
-    elif img.shape[2] == 3:
+    if mask == None:
         # Create a new tensor with the same height and width as the input image
         # and a single channel filled with the maximum value (representing full opacity)
         alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
         
         # Concatenate the input image with the new alpha channel along the channel dimension
         img_with_alpha = torch.cat((img, alpha_channel), dim=2)
-        
-        return img_with_alpha.numpy()
+    
     else:
-        raise ValueError("Input image must have either 3 (RGB) or 4 (RGBA) channels")
+        mask = mask.squeeze(0)
+        mask = mask.unsqueeze(-1)
+        # Convert mask from 0-1 to 0-255 data
+        mask = mask * 255
+        invert_mask = 255 - mask
+        img_with_alpha = torch.cat((img, invert_mask), dim=2)
+    return img_with_alpha.numpy()
+
     
 def resize_image(background, source, method):
     # Convert numpy arrays to PIL Images
@@ -238,5 +245,3 @@ def resize_image(background, source, method):
     resized_source = np.array(resized_source, dtype=np.float32)
 
     return resized_source
-
-
