@@ -1,10 +1,10 @@
 from PIL import Image
 import numpy as np
+import torch
 from colorsys import rgb_to_hsv, hsv_to_rgb
 from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
-import torch
 
 def subtract(background, source, opacity):
     return background - (source * opacity)
@@ -94,7 +94,6 @@ def color(backdrop, source, opacity):
 
     return new_rgba.astype(np.uint8)
 
-
 modes = {
     "difference": difference, 
     "normal": normal, 
@@ -129,6 +128,9 @@ class Blend:
             "required": {
                 "backdrop": ("IMAGE",),
                 "source": ("IMAGE",),
+                "blend_mode": (["difference", "normal", "screen", "soft_light", "lighten_only", "dodge","addition",
+                                "darken_only", "multiply","hard_light","subtract", "grain_extract",
+                                "grain_merge", "divide", "overlay", "hue", "saturation","color", "luminance"],),
                 "opacity": ("FLOAT", {
                     "default": 1.0,
                     "min": 0.0,
@@ -137,9 +139,7 @@ class Blend:
                     "round": 0.001, 
                     "display": "number"}),
                 "source_adjust": (["crop", "stretch"],),
-                "blend_mode": (["difference", "normal", "screen", "soft_light", "lighten_only", "dodge","addition",
-                                "darken_only", "multiply","hard_light","subtract", "grain_extract",
-                                "grain_merge", "divide", "overlay", "hue", "saturation","color", "luminance"],),
+                "invert_mask": (["yes", "no"],),
             },
             "optional": {
                 "mask": ("MASK",),
@@ -150,11 +150,11 @@ class Blend:
     FUNCTION = "do_blend"
     CATEGORY = "Virtuoso"
     
-    def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode, mask=None):
+    def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode, mask=None, invert_mask="yes"):
 
         # Ensure images are in the correct form and data type
         backdrop_prepped = prep_image(backdrop)
-        source_prepped = prep_image(source, mask)
+        source_prepped = prep_image(source, mask, invert_mask)
 
         # Size source image to backdrop image, according to preference
         source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
@@ -167,7 +167,7 @@ class Blend:
         
         return (final_tensor,)
 
-def prep_image(img, mask=None):
+def prep_image(img, mask=None, invert_mask="yes"):
     # Check if the image has a batch dimension and if so, remove it
     if img.shape[0] == 1:
         img = img.squeeze(0)
@@ -189,8 +189,9 @@ def prep_image(img, mask=None):
         mask = mask.unsqueeze(-1)
         # Convert mask from 0-1 to 0-255 data
         mask = mask * 255
-        invert_mask = 255 - mask
-        img_with_alpha = torch.cat((img, invert_mask), dim=2)
+        if invert_mask == "yes":
+            inverted_mask = 255 - mask
+        img_with_alpha = torch.cat((img, inverted_mask), dim=2)
     return img_with_alpha.numpy()
 
     
