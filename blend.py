@@ -150,11 +150,11 @@ class Blend:
     FUNCTION = "do_blend"
     CATEGORY = "Virtuoso"
     
-    def do_blend(self, backdrop, source, opacity, source_adjust, blend_mode, mask=None, invert_mask="yes"):
+    def do_blend(self, backdrop, source, blend_mode, opacity, source_adjust, invert_mask, mask=None ):
 
         # Ensure images are in the correct form and data type
         backdrop_prepped = prep_image(backdrop)
-        source_prepped = prep_image(source, mask, invert_mask)
+        source_prepped = prep_image(source, invert_mask, mask)
 
         # Size source image to backdrop image, according to preference
         source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
@@ -167,7 +167,7 @@ class Blend:
         
         return (final_tensor,)
 
-def prep_image(img, mask=None, invert_mask="yes"):
+def prep_image(img, invert_mask="true", mask=None ):
     # Check if the image has a batch dimension and if so, remove it
     if img.shape[0] == 1:
         img = img.squeeze(0)
@@ -191,6 +191,8 @@ def prep_image(img, mask=None, invert_mask="yes"):
         mask = mask * 255
         if invert_mask == "yes":
             inverted_mask = 255 - mask
+        else:
+            inverted_mask = mask
         img_with_alpha = torch.cat((img, inverted_mask), dim=2)
     return img_with_alpha.numpy()
 
