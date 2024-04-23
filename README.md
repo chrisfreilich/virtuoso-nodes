@@ -2,6 +2,9 @@
 
 This node takes two images and applies a blending mode to them. Some examples:
 
+**Difference Mode**
+![Difference Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/9cee4442-c65a-4025-9a7d-ab6f60a76197)
+
 **Screen Mode**
 ![Screen Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
 
