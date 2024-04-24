@@ -2,8 +2,30 @@
 
 This node extends the functionality of the built-in Blend node by including many more blend modes, and including a scaling option for the top layer.
 
+### Node controls:
+
+- backdrop: This is the background image. The output image will have the same dimensions as this image
+- source: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
+- mask: Can be used to retain the alpha channel from the source image, or you can use an external mask to control the blended area.
+- opacity: The opacity of the source image. (The backdrop image is 100% opacity) Opacity is a little weird with blend modes, so the effect might not be as you would expect.
+- source_adjust: The method by which the source image will be resized if necessary.
+     - Stretch will change each dimension just as much as needed to match that dimension, potentially changing the aspect ratio of the source image and causing distortion.
+     - Crop will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
+- blend_mode: difference is the default, but all the common blending modes are available.
+
+### Installation:
+
+1. Git clone this repo into a folder in ComfyUI\custom_nodes
+2. pip install -r requirements.txt
+
+Please let me know if you have any thoughts or suggestions!
+
+
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
+
+**Exclusion Mode**
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/032996c7-c4aa-471c-a89e-e97b114813f9)
 
 **Normal Mode**
 ![Normal Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e9a16322-a1bb-425d-ad2c-3d69dfd4b887)
@@ -47,21 +69,3 @@ This node extends the functionality of the built-in Blend node by including many
 **Overlay Mode**  
 ![Overlay Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/de63d31c-99e9-434c-ad97-84767f9cac09)
 
-
-
-### Node controls:
-
-- backdrop: This is the background image. The output image will have the same dimensions as this image
-- source: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
-- opacity: The opacity of the source image. (The backdrop image is 100% opacity) Opacity is a little weird with blend modes, so the effect might not be as you would expect.
-- source_adjust: The method by which the source image will be resized if necessary.
-     - Stretch will change each dimension just as much as needed to match that dimension, potentially changing the aspect ratio of the source image and causing distortion.
-     - Crop will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
-- blend_mode: difference is the default, but all the common blending modes are available.
-
-### Installation:
-
-1. Git clone this repo into a folder in ComfyUI\custom_nodes
-2. pip install -r requirements.txt
-
-Please let me know if you have any thoughts or suggestions!
