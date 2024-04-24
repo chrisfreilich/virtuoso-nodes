@@ -5,7 +5,7 @@ This node extends the functionality of the built-in Blend node by including many
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
 
-**Normal Mode (50% Opacity)**
+**Normal Mode**
 ![Normal Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e9a16322-a1bb-425d-ad2c-3d69dfd4b887)
 
 **Screen Mode**
@@ -23,7 +23,7 @@ This node extends the functionality of the built-in Blend node by including many
 **Addition (aka Linear Dodge) Mode**
 ![Addition Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/1d6c94c5-6b52-4a1f-a99b-f12b535d478c)
 
-**Darken Only Mode**  
+**Darken Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/f62c784f-63e8-4786-8fa1-b5ffe729fb4e)
 
 **Multiply Mode**  
