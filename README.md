@@ -18,14 +18,17 @@ This node extends the functionality of the built-in Blend node by including many
 1. Git clone this repo into a folder in ComfyUI\custom_nodes
 2. pip install -r requirements.txt
 
+Learn about the math behind the blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes
+
 Please let me know if you have any thoughts or suggestions!
 
+## Examples
 
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
 
 **Exclusion Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/032996c7-c4aa-471c-a89e-e97b114813f9)
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
 
 **Normal Mode**
 ![Normal Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e9a16322-a1bb-425d-ad2c-3d69dfd4b887)
