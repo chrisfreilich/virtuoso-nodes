@@ -24,7 +24,7 @@ Please let me know if you have any thoughts or suggestions!
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
 
-**Exclusion Mode**
+**Exclusion Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/032996c7-c4aa-471c-a89e-e97b114813f9)
 
 **Normal Mode**
