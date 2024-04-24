@@ -6,8 +6,21 @@ from blend_modes import difference, normal, screen, soft_light, lighten_only, do
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 
+# add opacity to image in numpy array
+def add_opacity(original, blended, opacity):
+    return original + ((blended - original) * opacity)
+
 def subtract(background, source, opacity):
     return background - (source * opacity)
+
+def exclusion(background, source, opacity):
+
+    # calulation involves multiplication, so must renormalize
+    background = background / 255
+    source = source / 255
+    blended = background + source - (2 * background * source)
+    return add_opacity(background, blended , opacity) * 255 
+
 
 def saturation(backdrop, source, opacity):
     # Convert RGBA to RGB
@@ -94,26 +107,28 @@ def color(backdrop, source, opacity):
 
     return new_rgba.astype(np.uint8)
 
+# Map human readable blend mode names to functions.
 modes = {
     "difference": difference, 
+    "exclusion": exclusion,
     "normal": normal, 
     "screen": screen,
-    "soft_light": soft_light, 
-    "lighten_only": lighten_only, 
+    "soft light": soft_light, 
+    "lighten": lighten_only, 
     "dodge": dodge,
-    "addition": addition,
-    "darken_only": darken_only,
+    "linear dodge (add)": addition,
+    "darken": darken_only,
     "multiply": multiply,
-    "hard_light": hard_light,
+    "hard light": hard_light,
     "subtract": subtract, 
-    "grain_extract": grain_extract,
-    "grain_merge": grain_merge, 
+    "grain extract": grain_extract,
+    "grain merge": grain_merge, 
     "divide": divide, 
     "overlay": overlay,
     "hue": hue,
     "saturation": saturation,
     "color": color,
-    "luminance": luminance
+    "luminosity": luminance
 }
 
 class Blend:
@@ -128,9 +143,12 @@ class Blend:
             "required": {
                 "backdrop": ("IMAGE",),
                 "source": ("IMAGE",),
-                "blend_mode": (["difference", "normal", "screen", "soft_light", "lighten_only", "dodge","addition",
-                                "darken_only", "multiply","hard_light","subtract", "grain_extract",
-                                "grain_merge", "divide", "overlay", "hue", "saturation","color", "luminance"],),
+                "blend_mode": (["normal", "dissolve", "darken", "multiply", "color burn", "linear burn", "darker color", 
+                                "lighten", "screen", "dodge","color dodge", "linear dodge (add)", "lighter color",
+                                "overlay", "soft light", "hard light", "vivid light", "linear light", "pin light", "hard mix",
+                                "difference", "exclusion", "subtract",  "divide",
+                                "hue", "saturation", "color", "luminosity", 
+                                "grain extract", "grain merge"],),
                 "opacity": ("FLOAT", {
                     "default": 1.0,
                     "min": 0.0,
