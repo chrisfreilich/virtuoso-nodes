@@ -1,25 +1,77 @@
 from PIL import Image
 import numpy as np
 import torch
+import torch.nn.functional as F
 from colorsys import rgb_to_hsv, hsv_to_rgb
 from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 
-# add opacity to image in numpy array
-def add_opacity(original, blended, opacity):
-    return original + ((blended - original) * opacity)
+def subtract(backdrop, source, opacity):
+    # Normalize the RGB and alpha values to 0-1
+    backdrop_norm = backdrop[:, :, :3] / 255
+    source_norm = source[:, :, :3] / 255
+    source_alpha_norm = source[:, :, 3:4] / 255
 
-def subtract(background, source, opacity):
-    return background - (source * opacity)
+    # Calculate the new RGB values by subtracting the source from the backdrop, weighted by the opacity
+    # The source RGB values are also weighted by the normalized source alpha channel
+    new_rgb = backdrop_norm - (source_norm * source_alpha_norm * opacity)
 
-def exclusion(background, source, opacity):
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
 
-    # calulation involves multiplication, so must renormalize
-    background = background / 255
-    source = source / 255
-    blended = background + source - (2 * background * source)
-    return add_opacity(background, blended , opacity) * 255 
+    # Convert the RGB values back to 0-255
+    new_rgb = new_rgb * 255
+
+    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
+    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+
+    # Create a new RGBA image with the calculated RGB and alpha values
+    result = np.dstack((new_rgb, new_alpha))
+
+    return result
+
+def exclusion(backdrop, source, opacity):
+    # Normalize the RGB and alpha values to 0-1
+    backdrop_norm = backdrop[:, :, :3] / 255
+    source_norm = source[:, :, :3] / 255
+    source_alpha_norm = source[:, :, 3:4] / 255
+
+    # Calculate the blend without any transparency considerations
+    blend = backdrop_norm + source_norm - (2 * backdrop_norm * source_norm)
+
+    # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
+    new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
+
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
+
+    # Convert the RGB values back to 0-255
+    new_rgb = new_rgb * 255
+
+    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
+    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+
+    # Create a new RGBA image with the calculated RGB and alpha values
+    result = np.dstack((new_rgb, new_alpha))
+
+    return result
+
+def dissolve(backdrop, source, opacity):
+
+    # Calculate the probability based on the opacity value
+    probability = 0.1 + (opacity * 0.8)
+
+    # Create a random mask to determine which pixels to take from the source image
+    mask = np.random.rand(*backdrop.shape[:2]) < probability
+
+    # Create the output image, initially a copy of the backdrop
+    output = backdrop.copy()
+
+    # Where the mask is True, replace the pixel with the corresponding pixel from the source image
+    output[mask] = source[mask]
+
+    return output
 
 
 def saturation(backdrop, source, opacity):
@@ -111,6 +163,7 @@ def color(backdrop, source, opacity):
 modes = {
     "difference": difference, 
     "exclusion": exclusion,
+    "dissolve": dissolve,
     "normal": normal, 
     "screen": screen,
     "soft light": soft_light, 
@@ -185,35 +238,49 @@ class Blend:
         
         return (final_tensor,)
 
-def prep_image(img, invert_mask="true", mask=None ):
-    # Check if the image has a batch dimension and if so, remove it
-    if img.shape[0] == 1:
+def prep_image(img, invert_mask="true", mask=None):
+
+    # Remove batch dimension if it exists
+    if len(img.shape) == 4:
         img = img.squeeze(0)
 
     # Convert image from 0-1 to 0-255 data
     img = img * 255
 
-    # Make sure the image has an alpha channel
-    if mask == None:
+    # Create or process mask
+    if mask is None:
         # Create a new tensor with the same height and width as the input image
         # and a single channel filled with the maximum value (representing full opacity)
         alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
-        
-        # Concatenate the input image with the new alpha channel along the channel dimension
-        img_with_alpha = torch.cat((img, alpha_channel), dim=2)
-    
     else:
-        mask = mask.squeeze(0)
-        mask = mask.unsqueeze(-1)
+        # Add channel dimension if it doesn't exist
+        if len(mask.shape) == 2:
+            mask = mask.unsqueeze(-1)
+
         # Convert mask from 0-1 to 0-255 data
         mask = mask * 255
-        if invert_mask == "yes":
-            inverted_mask = 255 - mask
-        else:
-            inverted_mask = mask
-        img_with_alpha = torch.cat((img, inverted_mask), dim=2)
-    return img_with_alpha.numpy()
 
+        # Invert mask if necessary
+        if invert_mask == "yes":
+            mask = 255 - mask
+
+        # Resize mask to match image dimensions
+        h, w = img.shape[:2]
+        mask = F.interpolate(mask[None, ...], size=(h, w), mode='bilinear', align_corners=False)[0]
+
+        # Squeeze the mask tensor to remove the extra dimension at the beginning
+        mask = mask.squeeze(0)
+
+        alpha_channel = mask
+
+    # Ensure alpha_channel has the same number of dimensions as img
+    if len(alpha_channel.shape) < len(img.shape):
+        alpha_channel = alpha_channel.unsqueeze(-1)
+
+    # Concatenate the input image with the alpha channel along the channel dimension
+    img_with_alpha = torch.cat((img, alpha_channel), dim=2)
+
+    return img_with_alpha.numpy()
     
 def resize_image(background, source, method):
     # Convert numpy arrays to PIL Images
