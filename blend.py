@@ -7,6 +7,9 @@ from blend_modes import difference, normal, screen, soft_light, lighten_only, do
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 
+'''
+    Define all the blend modes that are not available from the blend_modes package
+'''
 def dissolve(backdrop, source, opacity):
     # Normalize the RGB and alpha values to 0-1
     backdrop_norm = backdrop[:, :, :3] / 255
@@ -159,6 +162,9 @@ def simple_mode(backdrop, source, opacity, mode):
         blend = np.clip(blend, 0, 1)   
     elif mode == "pin_light":
         blend = np.where(source_norm <= 0.5, np.minimum(backdrop_norm, 2 * source_norm), np.maximum(backdrop_norm, 2 * (source_norm - 0.5)))  
+    elif mode == "hard_mix":
+        blend = simple_mode(backdrop, source, opacity, "linear_light")
+        blend = np.round(blend[:, :, :3] / 255)
 
     # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
     new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
@@ -183,6 +189,8 @@ def vivid_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "vivid_light")
 def pin_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "pin_light")
+def hard_mix(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "hard_mix")
 def linear_burn(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_burn")
 def color_dodge(backdrop, source, opacity): 
@@ -194,7 +202,10 @@ def exclusion(backdrop, source, opacity):
 def subtract(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "subtract")
 
-# Map human readable blend mode names to functions.
+'''
+    Map human readable blend mode names to functions that
+    will be called based on user selection.
+'''
 modes = {
     "difference": difference, 
     "exclusion": exclusion,
@@ -211,6 +222,7 @@ modes = {
     "linear light": linear_light,
     "vivid light": vivid_light,
     "pin light": pin_light,
+    "hard mix": hard_mix,
     "darken": darken_only,
     "darker color": darker_color,
     "multiply": multiply,
@@ -227,6 +239,9 @@ modes = {
     "luminosity": luminance
 }
 
+'''
+    Main class. Structure is defined by ComfyUI
+'''
 class Blend:
     
     def __init__(self):
@@ -281,6 +296,9 @@ class Blend:
         
         return (final_tensor,)
 
+'''
+    Helper functions for the main do_blend function in the Blend class
+'''
 def prep_image(img, invert_mask="true", mask=None):
 
     # Remove batch dimension if it exists
@@ -313,7 +331,6 @@ def prep_image(img, invert_mask="true", mask=None):
 
         # Squeeze the mask tensor to remove the extra dimension at the beginning
         mask = mask.squeeze(0)
-
         alpha_channel = mask
 
     # Ensure alpha_channel has the same number of dimensions as img
@@ -339,24 +356,14 @@ def resize_image(background, source, method):
         resized_source = source.resize((bg_width, bg_height))
 
     elif method == 'crop':
-        # Calculate the aspect ratio of the source and background images
         src_ratio = source.width / source.height
         bg_ratio = bg_width / bg_height
-
         if src_ratio > bg_ratio:
-            # If source aspect ratio is greater than background aspect ratio,
-            # resize source height to match background height and adjust width
-            # to maintain aspect ratio
             new_height = bg_height
             new_width = int(new_height * src_ratio)
         else:
-            # If source aspect ratio is less than or equal to background aspect ratio,
-            # resize source width to match background width and adjust height
-            # to maintain aspect ratio
             new_width = bg_width
             new_height = int(new_width / src_ratio)
-
-        # Resize the source image
         resized_source = source.resize((new_width, new_height))
 
         # Calculate the area to crop
