@@ -1,4 +1,13 @@
-# Virtuoso ComfyUI Blend Modes Node
+# Virtuoso Nodes for ComfyUI
+
+This set of nodes is designed to give some Photoshop-like functionality within ComfyUI. The nodes available are
+
+1. Blend Modes: Applies an image to another image using a blend mode operation. Every conceivable blend mode is available!
+2. Solid Color Image: This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
+3. SplitRGB: This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
+4. MergeRGB: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wisYouh for trippy effects!
+
+##ComfyUI Blend Modes Node
 
 This node extends the functionality of the built-in Blend node by including many more blend modes, and including a scaling option for the top layer.
 
