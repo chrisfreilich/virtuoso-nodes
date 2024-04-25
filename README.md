@@ -2,10 +2,10 @@
 
 This set of nodes is designed to give some Photoshop-like functionality within ComfyUI. The nodes available are
 
-1. Blend Modes: Applies an image to another image using a blend mode operation. Every conceivable blend mode is available!
-2. Solid Color Image: This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
-3. SplitRGB: This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
-4. MergeRGB: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wisYouh for trippy effects!
+1. **Blend Modes**: Applies an image to another image using a blend mode operation. Every conceivable blend mode is available!
+2. **Solid Color Image**: This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
+3. **SplitRGB**: This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
+4. **MergeRGB**: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects!
 
 ##ComfyUI Blend Modes Node
 
@@ -13,14 +13,14 @@ This node extends the functionality of the built-in Blend node by including many
 
 ### Node controls:
 
-- backdrop: This is the background image. The output image will have the same dimensions as this image
-- source: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
-- mask: Can be used to retain the alpha channel from the source image, or you can use an external mask to control the blended area.
-- opacity: The opacity of the source image. (The backdrop image is 100% opacity) Opacity is a little weird with blend modes, so the effect might not be as you would expect.
-- source_adjust: The method by which the source image will be resized if necessary.
-     - Stretch will change each dimension just as much as needed to match that dimension, potentially changing the aspect ratio of the source image and causing distortion.
-     - Crop will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
-- blend_mode: difference is the default, but all the common blending modes are available.
+- **backdrop**: This is the background image. The output image will have the same dimensions as this image
+- **source**: This is the top image. If it is not the same size as the backdrop image, it will be resized to cover the backdrop
+- **mask**: Can be used to retain the alpha channel from the source image, or you can use an external mask to control the blended area.
+- **opacity**: The opacity of the source image. (The backdrop image is 100% opacity) Opacity is a little weird with blend modes, so the effect might not be as you would expect.
+- **source_adjust**: The method by which the source image will be resized if necessary.
+     - *Stretch* will change each dimension just as much as needed to match that dimension, potentially changing the aspect ratio of the source image and causing distortion.
+     - *Crop* will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
+- **blend_mode**: normal is the default blend mode.
 
 ### Installation:
 
