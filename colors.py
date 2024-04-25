@@ -1,3 +1,9 @@
+'''
+    COLORS.PY
+    class SolidColor is a ComfyUI node to create solid color images.
+    class SplitRGB is a ComfyUI node to split an image into three images with just one color channel.
+    https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md
+'''
 import torch
 
 class SolidColor():
@@ -31,3 +37,36 @@ class SolidColor():
         # Assign the RGB channels
         image[:, :, :, :3] = color.view(1, 1, 1, 3)
         return (image, )
+    
+class SplitRGB():
+    
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        
+        return {
+            "required": {
+                "image": ("IMAGE",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
+    FUNCTION = "do_split"
+    CATEGORY = "Virtuoso"
+    
+    def do_split(self, img):
+        # Create tensors for red, green, and blue channels
+        red = torch.zeros_like(img)
+        green = torch.zeros_like(img)
+        blue = torch.zeros_like(img)
+
+        # Assign the corresponding color channels from the input image
+        red[:, :, 0] = img[:, :, 0]
+        green[:, :, 1] = img[:, :, 1]
+        blue[:, :, 2] = img[:, :, 2]
+
+        return (red, green, blue)
+        
+        
