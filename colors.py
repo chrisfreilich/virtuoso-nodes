@@ -83,7 +83,7 @@ class MergeRGB():
             "required": {
                 "red": ("IMAGE",),
                 "green": ("IMAGE",),
-                "blue": ("IMAGE",),
+                "blue": ("IMAGE",)
             },
         }
 
@@ -101,5 +101,5 @@ class MergeRGB():
         img[0, :, :, 1] = green[0, :, :, 1]
         img[0, :, :, 2] = blue[0, :, :, 2]
 
-        return (img)
+        return (img,)
       
