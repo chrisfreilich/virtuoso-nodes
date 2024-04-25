@@ -238,7 +238,32 @@ def color_dodge(backdrop, source, opacity):
 
     return result
 
+def linear_burn(backdrop, source, opacity):
+    # Normalize the RGB and alpha values to 0-1
+    backdrop_norm = backdrop[:, :, :3] / 255
+    source_norm = source[:, :, :3] / 255
+    source_alpha_norm = source[:, :, 3:4] / 255
 
+    # Calculate the blend without any transparency considerations
+    blend = backdrop_norm + source_norm - 1  
+    blend = np.clip(blend, 0, 1)                                   
+
+    # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
+    new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
+
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
+
+    # Convert the RGB values back to 0-255
+    new_rgb = new_rgb * 255
+
+    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
+    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+
+    # Create a new RGBA image with the calculated RGB and alpha values
+    result = np.dstack((new_rgb, new_alpha))
+
+    return result
 
 # Map human readable blend mode names to functions.
 modes = {
@@ -252,6 +277,7 @@ modes = {
     "lighter color": lighter_color,
     "dodge": dodge,
     "color dodge": color_dodge,
+    "linear burn": linear_burn,
     "linear dodge (add)": addition,
     "darken": darken_only,
     "darker color": darker_color,
