@@ -7,56 +7,6 @@ from blend_modes import difference, normal, screen, soft_light, lighten_only, do
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 
-def subtract(backdrop, source, opacity):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3:4] / 255
-
-    # Calculate the new RGB values by subtracting the source from the backdrop, weighted by the opacity
-    # The source RGB values are also weighted by the normalized source alpha channel
-    new_rgb = backdrop_norm - (source_norm * source_alpha_norm * opacity)
-
-    # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
-
-    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
-
-    # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
-
-    return result
-
-def exclusion(backdrop, source, opacity):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3:4] / 255
-
-    # Calculate the blend without any transparency considerations
-    blend = backdrop_norm + source_norm - (2 * backdrop_norm * source_norm)
-
-    # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
-    new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
-
-    # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
-
-    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
-
-    # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
-
-    return result
-
 def dissolve(backdrop, source, opacity):
     # Normalize the RGB and alpha values to 0-1
     backdrop_norm = backdrop[:, :, :3] / 255
@@ -183,16 +133,28 @@ def darker_color(backdrop, source, opacity):
 def lighter_color(backdrop, source, opacity):
     return darker_lighter_color(backdrop, source, opacity, "light")
 
-
-def color_burn(backdrop, source, opacity):
+def simple_mode(backdrop, source, opacity, mode):
     # Normalize the RGB and alpha values to 0-1
     backdrop_norm = backdrop[:, :, :3] / 255
     source_norm = source[:, :, :3] / 255
     source_alpha_norm = source[:, :, 3:4] / 255
 
     # Calculate the blend without any transparency considerations
-    blend = 1 - ((1 - backdrop_norm) / source_norm)  
-    blend = np.clip(blend, 0, 1)                                   
+    if mode == "linear_burn":
+        blend = backdrop_norm + source_norm - 1  
+        #blend = np.clip(blend, 0, 1)  
+    elif mode == "linear_light":
+        blend = backdrop_norm + (2 * source_norm) - 1
+    elif mode == "color_dodge":
+        blend = backdrop_norm / (1 - source_norm)  
+        blend = np.clip(blend, 0, 1) 
+    elif mode == "color_burn":
+        blend = 1 - ((1 - backdrop_norm) / source_norm)  
+        blend = np.clip(blend, 0, 1)   
+    elif mode == "exclusion":
+        blend = backdrop_norm + source_norm - (2 * backdrop_norm * source_norm)
+    elif mode == "subtract":
+        blend = backdrop_norm - source_norm    
 
     # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
     new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
@@ -211,59 +173,19 @@ def color_burn(backdrop, source, opacity):
 
     return result
 
-def color_dodge(backdrop, source, opacity):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3:4] / 255
-
-    # Calculate the blend without any transparency considerations
-    blend = backdrop_norm / (1 - source_norm)  
-    blend = np.clip(blend, 0, 1)                                   
-
-    # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
-    new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
-
-    # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
-
-    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
-
-    # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
-
-    return result
-
+def linear_light(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "linear_light")
 def linear_burn(backdrop, source, opacity):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3:4] / 255
+    return simple_mode(backdrop, source, opacity, "linear_burn")
+def color_dodge(backdrop, source, opacity): 
+    return simple_mode(backdrop, source, opacity, "color_dodge") 
+def color_burn(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "color_burn")
+def exclusion(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "exclusion")
+def subtract(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "subtract")
 
-    # Calculate the blend without any transparency considerations
-    blend = backdrop_norm + source_norm - 1  
-    blend = np.clip(blend, 0, 1)                                   
-
-    # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
-    new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
-
-    # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
-
-    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
-
-    # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
-
-    return result
 
 # Map human readable blend mode names to functions.
 modes = {
@@ -279,6 +201,7 @@ modes = {
     "color dodge": color_dodge,
     "linear burn": linear_burn,
     "linear dodge (add)": addition,
+    "linear light": linear_light,
     "darken": darken_only,
     "darker color": darker_color,
     "multiply": multiply,
