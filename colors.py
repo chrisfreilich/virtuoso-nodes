@@ -4,7 +4,7 @@ class SolidColor():
     NAME = "Solid Color"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("solid color")
+    RETURN_NAMES = ("image")
     FUNCTION = "get_solid_color"
 
     @classmethod
