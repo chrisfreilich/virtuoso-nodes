@@ -53,20 +53,19 @@ class SplitRGB():
         }
 
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
+    RETURN_NAMES = ('red', 'green', 'blue',)
     FUNCTION = "do_split"
     CATEGORY = "Virtuoso"
     
-    def do_split(self, img):
+    def do_split(self, image):
         # Create tensors for red, green, and blue channels
-        red = torch.zeros_like(img)
-        green = torch.zeros_like(img)
-        blue = torch.zeros_like(img)
+        red = torch.zeros_like(image)
+        green = torch.zeros_like(image)
+        blue = torch.zeros_like(image)
 
         # Assign the corresponding color channels from the input image
-        red[:, :, 0] = img[:, :, 0]
-        green[:, :, 1] = img[:, :, 1]
-        blue[:, :, 2] = img[:, :, 2]
+        red[0, :, :, 0] = image[0, :, :, 0]
+        green[0, :, :, 1] = image[0, :, :, 1]
+        blue[0, :, :, 2] = image[0, :, :, 2]
 
         return (red, green, blue)
-        
-        
