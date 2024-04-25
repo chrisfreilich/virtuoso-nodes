@@ -154,7 +154,10 @@ def simple_mode(backdrop, source, opacity, mode):
     elif mode == "exclusion":
         blend = backdrop_norm + source_norm - (2 * backdrop_norm * source_norm)
     elif mode == "subtract":
-        blend = backdrop_norm - source_norm    
+        blend = backdrop_norm - source_norm
+    elif mode == "vivid_light":
+        blend = np.where(source_norm <= 0.5, backdrop_norm / (1 - 2 * source_norm), 1 - (1 -backdrop_norm) / (2 * source_norm - 0.5) )
+        blend = np.clip(blend, 0, 1)   
 
     # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
     new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
@@ -175,6 +178,8 @@ def simple_mode(backdrop, source, opacity, mode):
 
 def linear_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_light")
+def vivid_light(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "vivid_light")
 def linear_burn(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_burn")
 def color_dodge(backdrop, source, opacity): 
@@ -202,6 +207,7 @@ modes = {
     "linear burn": linear_burn,
     "linear dodge (add)": addition,
     "linear light": linear_light,
+    "vivid light": vivid_light,
     "darken": darken_only,
     "darker color": darker_color,
     "multiply": multiply,
