@@ -69,3 +69,37 @@ class SplitRGB():
         blue[0, :, :, 2] = image[0, :, :, 2]
 
         return (red, green, blue)
+    
+
+class MergeRGB():
+    
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        
+        return {
+            "required": {
+                "red": ("IMAGE",),
+                "green": ("IMAGE",),
+                "blue": ("IMAGE",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_merge"
+    CATEGORY = "Virtuoso"
+    
+    def do_merge(self, red, green, blue):
+       
+        # Create a tensor for the new image
+        img = torch.zeros_like(red)
+
+        # Assign the corresponding color channels from the input images
+        img[0, :, :, 0] = red[0, :, :, 0]
+        img[0, :, :, 1] = green[0, :, :, 1]
+        img[0, :, :, 2] = blue[0, :, :, 2]
+
+        return (img)
+      
