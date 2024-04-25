@@ -58,21 +58,39 @@ def exclusion(backdrop, source, opacity):
     return result
 
 def dissolve(backdrop, source, opacity):
+    # Normalize the RGB and alpha values to 0-1
+    backdrop_norm = backdrop[:, :, :3] / 255
+    source_norm = source[:, :, :3] / 255
+    source_alpha_norm = source[:, :, 3] / 255
 
-    # Calculate the probability based on the opacity value
-    probability = 0.1 + (opacity * 0.8)
+    # Calculate the transparency of each pixel in the source image
+    transparency = opacity * source_alpha_norm
 
-    # Create a random mask to determine which pixels to take from the source image
-    mask = np.random.rand(*backdrop.shape[:2]) < probability
+    # Generate a random matrix with the same shape as the source image
+    random_matrix = np.random.random(source.shape[:2])
 
-    # Create the output image, initially a copy of the backdrop
-    output = backdrop.copy()
+    # Create a mask where the random values are less than the transparency
+    mask = random_matrix < transparency
 
-    # Where the mask is True, replace the pixel with the corresponding pixel from the source image
-    output[mask] = source[mask]
+    # Use the mask to select pixels from the source or backdrop
+    blend = np.where(mask[..., None], source_norm, backdrop_norm)
 
-    return output
+    # Apply the alpha channel of the source image to the blended image
+    new_rgb = (1 - source_alpha_norm[..., None]) * backdrop_norm + source_alpha_norm[..., None] * blend
 
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
+
+    # Convert the RGB values back to 0-255
+    new_rgb = new_rgb * 255
+
+    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
+    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+
+    # Create a new RGBA image with the calculated RGB and alpha values
+    result = np.dstack((new_rgb, new_alpha))
+
+    return result
 
 def saturation(backdrop, source, opacity):
     # Convert RGBA to RGB
