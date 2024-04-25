@@ -141,8 +141,7 @@ def simple_mode(backdrop, source, opacity, mode):
 
     # Calculate the blend without any transparency considerations
     if mode == "linear_burn":
-        blend = backdrop_norm + source_norm - 1  
-        #blend = np.clip(blend, 0, 1)  
+        blend = backdrop_norm + source_norm - 1   
     elif mode == "linear_light":
         blend = backdrop_norm + (2 * source_norm) - 1
     elif mode == "color_dodge":
@@ -158,6 +157,8 @@ def simple_mode(backdrop, source, opacity, mode):
     elif mode == "vivid_light":
         blend = np.where(source_norm <= 0.5, backdrop_norm / (1 - 2 * source_norm), 1 - (1 -backdrop_norm) / (2 * source_norm - 0.5) )
         blend = np.clip(blend, 0, 1)   
+    elif mode == "pin_light":
+        blend = np.where(source_norm <= 0.5, np.minimum(backdrop_norm, 2 * source_norm), np.maximum(backdrop_norm, 2 * (source_norm - 0.5)))  
 
     # Apply the blended layer back onto the backdrop layer while utilizing the alpha channel and opacity information
     new_rgb = (1 - source_alpha_norm * opacity) * backdrop_norm + source_alpha_norm * opacity * blend
@@ -180,6 +181,8 @@ def linear_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_light")
 def vivid_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "vivid_light")
+def pin_light(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "pin_light")
 def linear_burn(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_burn")
 def color_dodge(backdrop, source, opacity): 
@@ -190,7 +193,6 @@ def exclusion(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "exclusion")
 def subtract(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "subtract")
-
 
 # Map human readable blend mode names to functions.
 modes = {
@@ -208,6 +210,7 @@ modes = {
     "linear dodge (add)": addition,
     "linear light": linear_light,
     "vivid light": vivid_light,
+    "pin light": pin_light,
     "darken": darken_only,
     "darker color": darker_color,
     "multiply": multiply,
