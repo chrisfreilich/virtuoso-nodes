@@ -92,10 +92,11 @@ def dissolve(backdrop, source, opacity):
 
     return result
 
-def saturation(backdrop, source, opacity):
+def hsv(backdrop, source, opacity, channel):
     # Convert RGBA to RGB
     backdrop_rgb = backdrop[:, :, :3] / 255.0
     source_rgb = source[:, :, :3] / 255.0
+    source_alpha = source[:, :, 3] / 255.0
 
     # Convert RGB to HSV
     backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
@@ -103,79 +104,42 @@ def saturation(backdrop, source, opacity):
 
     # Combine HSV values
     new_hsv = backdrop_hsv.copy()
-    new_hsv[:, :, 1] = (1 - opacity) * backdrop_hsv[:, :, 1] + opacity * source_hsv[:, :, 1]
+    
+    # Determine which channel to operate on
+    if channel == "saturation":
+        new_hsv[:, :, 1] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, 1] + opacity * source_alpha * source_hsv[:, :, 1]
+    elif channel == "luminance":
+        new_hsv[:, :, 2] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, 2] + opacity * source_alpha * source_hsv[:, :, 2]
+    elif channel == "hue":
+        new_hsv[:, :, 0] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, 0] + opacity * source_alpha * source_hsv[:, :, 0]
+    elif channel == "color":
+        new_hsv[:, :, :2] = (1 - opacity * source_alpha[..., None]) * backdrop_hsv[:, :, :2] + opacity * source_alpha[..., None] * source_hsv[:, :, :2]
 
     # Convert HSV back to RGB
     new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
+
+    # Apply the alpha channel of the source image to the new RGB image
+    new_rgb = (1 - source_alpha[..., None]) * backdrop_rgb + source_alpha[..., None] * new_rgb
+
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
 
     # Convert RGB back to RGBA and scale to 0-255 range
     new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
 
     return new_rgba.astype(np.uint8)
+
+def saturation(backdrop, source, opacity):   
+    return hsv(backdrop, source, opacity, "saturation")
 
 def luminance(backdrop, source, opacity):
-    # Convert RGBA to RGB
-    backdrop_rgb = backdrop[:, :, :3] / 255.0
-    source_rgb = source[:, :, :3] / 255.0
-
-    # Convert RGB to HSV
-    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
-    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
-
-    # Combine HSV values
-    new_hsv = backdrop_hsv.copy()
-    new_hsv[:, :, 2] = (1 - opacity) * backdrop_hsv[:, :, 2] + opacity * source_hsv[:, :, 2]
-
-    # Convert HSV back to RGB
-    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
-
-    # Convert RGB back to RGBA and scale to 0-255 range
-    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
-
-    return new_rgba.astype(np.uint8)
+    return hsv(backdrop, source, opacity, "luminance")
 
 def hue(backdrop, source, opacity):
-    # Convert RGBA to RGB
-    backdrop_rgb = backdrop[:, :, :3] / 255.0
-    source_rgb = source[:, :, :3] / 255.0
-
-    # Convert RGB to HSV
-    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
-    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
-
-    # Combine HSV values
-    new_hsv = backdrop_hsv.copy()
-    new_hsv[:, :, 0] = (1 - opacity) * backdrop_hsv[:, :, 0] + opacity * source_hsv[:, :, 0]
-
-    # Convert HSV back to RGB
-    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
-
-    # Convert RGB back to RGBA and scale to 0-255 range
-    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
-
-    return new_rgba.astype(np.uint8)
+    return hsv(backdrop, source, opacity, "hue")
 
 def color(backdrop, source, opacity):
-    # Convert RGBA to RGB
-    backdrop_rgb = backdrop[:, :, :3] / 255.0
-    source_rgb = source[:, :, :3] / 255.0
-
-    # Convert RGB to HSV
-    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_rgb for rgb in row]).reshape(backdrop.shape[:2] + (3,))
-    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_rgb for rgb in row]).reshape(source.shape[:2] + (3,))
-
-    # Combine HSV values
-    new_hsv = backdrop_hsv.copy()
-    new_hsv[:, :, 0] = (1 - opacity) * backdrop_hsv[:, :, 0] + opacity * source_hsv[:, :, 0]
-    new_hsv[:, :, 1] = (1 - opacity) * backdrop_hsv[:, :, 1] + opacity * source_hsv[:, :, 1]
-
-    # Convert HSV back to RGB
-    new_rgb = np.array([hsv_to_rgb(*hsv) for row in new_hsv for hsv in row]).reshape(backdrop.shape[:2] + (3,))
-
-    # Convert RGB back to RGBA and scale to 0-255 range
-    new_rgba = np.dstack((new_rgb * 255, backdrop[:, :, 3]))
-
-    return new_rgba.astype(np.uint8)
+    return hsv(backdrop, source, opacity, "color")
 
 # Map human readable blend mode names to functions.
 modes = {
