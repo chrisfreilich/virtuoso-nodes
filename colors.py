@@ -4,7 +4,7 @@ class SolidColor():
     NAME = "Solid Color"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image")
+    RETURN_NAMES = ('solid color image',)
     FUNCTION = "get_solid_color"
 
     @classmethod
@@ -21,15 +21,13 @@ class SolidColor():
         }}
 
     def get_solid_color(self, **kw):
-         # Extract the color and dimension from the keyword arguments
-        color = [kw['RGB']['0'], kw['RGB']['1'], kw['RGB']['2']]
-        dimension = [kw['size']['0'], kw['size']['1']]
-
-        # Normalize the color to 0-1
-        color = [value / 255 for value in color]
+        # Extract the color and dimension from the keyword arguments
+        color = torch.tensor([kw['RGB']['0'], kw['RGB']['1'], kw['RGB']['2']], dtype=torch.float32) / 255  # Normalize to 0-1
+        dimension = torch.tensor([kw['size']['0'], kw['size']['1']], dtype=torch.int)
 
         # Create a 4D image tensor filled with the specified color
-        image = [[[color + [1.0]] * dimension[0]] * dimension[1]]
+        image = torch.ones((1, dimension[1], dimension[0], 4), dtype=torch.float32)
 
+        # Assign the RGB channels
+        image[:, :, :, :3] = color.view(1, 1, 1, 3)
         return (image, )
-

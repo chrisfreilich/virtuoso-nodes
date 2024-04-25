@@ -1,3 +1,8 @@
+'''
+    BLEND.PY
+    class Blend represents a custom node for ComfyUI that allows the user to use image blend modes.
+    https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md
+'''
 from PIL import Image
 import numpy as np
 import torch
@@ -7,9 +12,6 @@ from blend_modes import difference, normal, screen, soft_light, lighten_only, do
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 
-'''
-    Define all the blend modes that are not available from the blend_modes package
-'''
 def dissolve(backdrop, source, opacity):
     # Normalize the RGB and alpha values to 0-1
     backdrop_norm = backdrop[:, :, :3] / 255
@@ -46,7 +48,7 @@ def dissolve(backdrop, source, opacity):
     return result
 
 def hsv(backdrop, source, opacity, channel):
-    # Convert RGBA to RGB
+    # Convert RGBA to RGB, normalized
     backdrop_rgb = backdrop[:, :, :3] / 255.0
     source_rgb = source[:, :, :3] / 255.0
     source_alpha = source[:, :, 3] / 255.0
@@ -202,10 +204,6 @@ def exclusion(backdrop, source, opacity):
 def subtract(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "subtract")
 
-'''
-    Map human readable blend mode names to functions that
-    will be called based on user selection.
-'''
 modes = {
     "difference": difference, 
     "exclusion": exclusion,
@@ -239,9 +237,6 @@ modes = {
     "luminosity": luminance
 }
 
-'''
-    Main class. Structure is defined by ComfyUI
-'''
 class Blend:
     
     def __init__(self):
@@ -296,11 +291,7 @@ class Blend:
         
         return (final_tensor,)
 
-'''
-    Helper functions for the main do_blend function in the Blend class
-'''
 def prep_image(img, invert_mask="true", mask=None):
-
     # Remove batch dimension if it exists
     if len(img.shape) == 4:
         img = img.squeeze(0)
@@ -310,9 +301,13 @@ def prep_image(img, invert_mask="true", mask=None):
 
     # Create or process mask
     if mask is None:
-        # Create a new tensor with the same height and width as the input image
-        # and a single channel filled with the maximum value (representing full opacity)
-        alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
+        # If img already has an alpha channel, use it
+        if img.shape[2] == 4:
+            alpha_channel = img[:, :, 3:4]
+        else:
+            # Create a new tensor with the same height and width as the input image
+            # and a single channel filled with the maximum value (representing full opacity)
+            alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
     else:
         # Add channel dimension if it doesn't exist
         if len(mask.shape) == 2:
@@ -337,10 +332,14 @@ def prep_image(img, invert_mask="true", mask=None):
     if len(alpha_channel.shape) < len(img.shape):
         alpha_channel = alpha_channel.unsqueeze(-1)
 
-    # Concatenate the input image with the alpha channel along the channel dimension
-    img_with_alpha = torch.cat((img, alpha_channel), dim=2)
+    # If img already has an alpha channel, replace it
+    if img.shape[2] == 4:
+        img[:, :, 3:4] = alpha_channel
+    else:
+        # Concatenate the input image with the alpha channel along the channel dimension
+        img = torch.cat((img, alpha_channel), dim=2)
 
-    return img_with_alpha.numpy()
+    return img.numpy()
     
 def resize_image(background, source, method):
     # Convert numpy arrays to PIL Images
