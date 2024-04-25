@@ -7,8 +7,8 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Blend": "Blend Modes Node",
-    "SolidColor": "Solid Color Image Node"
+    "Blend": "Blend Modes",
+    "SolidColor": "Solid Color Image"
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
