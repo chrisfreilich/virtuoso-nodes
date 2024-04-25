@@ -141,6 +141,48 @@ def hue(backdrop, source, opacity):
 def color(backdrop, source, opacity):
     return hsv(backdrop, source, opacity, "color")
 
+def darker_lighter_color(backdrop, source, opacity, type):
+    # Normalize the RGB and alpha values to 0-1
+    backdrop_norm = backdrop[:, :, :3] / 255
+    source_norm = source[:, :, :3] / 255
+    source_alpha_norm = source[:, :, 3] / 255
+
+    # Convert RGB to HSV
+    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_norm for rgb in row]).reshape(backdrop.shape[:2] + (3,))
+    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_norm for rgb in row]).reshape(source.shape[:2] + (3,))
+
+    # Create a mask where the value (brightness) of the source image is less than the value of the backdrop image
+    if type == "dark":
+        mask = source_hsv[:, :, 2] < backdrop_hsv[:, :, 2]
+    else:
+        mask = source_hsv[:, :, 2] > backdrop_hsv[:, :, 2]
+
+    # Use the mask to select pixels from the source or backdrop
+    blend = np.where(mask[..., None], source_norm, backdrop_norm)
+
+    # Apply the alpha channel of the source image to the blended image
+    new_rgb = (1 - source_alpha_norm[..., None] * opacity) * backdrop_norm + source_alpha_norm[..., None] * opacity * blend
+
+    # Ensure the RGB values are within the valid range
+    new_rgb = np.clip(new_rgb, 0, 1)
+
+    # Convert the RGB values back to 0-255
+    new_rgb = new_rgb * 255
+
+    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
+    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+
+    # Create a new RGBA image with the calculated RGB and alpha values
+    result = np.dstack((new_rgb, new_alpha))
+
+    return result
+
+def darker_color(backdrop, source, opacity):
+    return darker_lighter_color(backdrop, source, opacity, "dark")
+
+def lighter_color(backdrop, source, opacity):
+    return darker_lighter_color(backdrop, source, opacity, "light")
+
 # Map human readable blend mode names to functions.
 modes = {
     "difference": difference, 
@@ -150,9 +192,11 @@ modes = {
     "screen": screen,
     "soft light": soft_light, 
     "lighten": lighten_only, 
+    "lighter color": lighter_color,
     "dodge": dodge,
     "linear dodge (add)": addition,
     "darken": darken_only,
+    "darker color": darker_color,
     "multiply": multiply,
     "hard light": hard_light,
     "subtract": subtract, 
