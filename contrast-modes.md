@@ -10,4 +10,6 @@
 ### Vivid Light Mode
 ![Vivid Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/bc7ca5d7-e98d-4654-9ecd-b1c0c6ff6dd5)
 
+### Linear Light Mode
+![Linear Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/377f4327-dbe4-49e8-a2db-916b0e895d76)
 
