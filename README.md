@@ -63,14 +63,17 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 
 ## Examples
 
+**Normal Mode**
+![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
+
+**Dissolve Mode** *(not terribly useful on its own, used here with a second screen blend mode)*
+![Dissolve Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/783ac2aa-7532-4ca2-a1ef-78ba5aa7d4fd)
+
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
 
 **Exclusion Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
-
-**Normal Mode**
-![Normal Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e9a16322-a1bb-425d-ad2c-3d69dfd4b887)
 
 **Screen Mode**
 ![Screen Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
