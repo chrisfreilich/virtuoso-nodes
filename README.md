@@ -27,11 +27,11 @@ This node gives access to thirty different blend modes, and includes a scaling o
 
 ### Examples
 [Normal](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#normal-modes)
-[Darken](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#darken-modes)
-[Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#lighten-modes)
-[Contrast](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#contrast-modes)
-[Component](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#component-modes)
-[Specialty](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md#specialty-mode)
+[Darken](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/darken-modes.md#darken-modes)
+[Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#lighten-modes)
+[Contrast](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/contrast-modes.md#contrast-modes)
+[Component](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/component-modes.md#component-modes)
+[Specialty](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/specialty-mode)
 
 Learn about the math behind blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes  
 A practical discussion of the blend modes is here: https://www.youtube.com/watch?v=i1D9ijh3_-I
