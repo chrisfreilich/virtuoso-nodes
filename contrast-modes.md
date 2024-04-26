@@ -1,3 +1,11 @@
+<span style="font-size:1.75em; font-weight:900;">**[README](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md)
+&nbsp;&nbsp;[Normal](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/normal-modes.md)
+&nbsp;&nbsp;[Darken](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/darken-modes.md)
+&nbsp;&nbsp;[Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md)
+&nbsp;&nbsp;Contrast
+&nbsp;&nbsp;[Component](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/component-modes.md)
+&nbsp;&nbsp;[Specialty](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/specialty-mode.md)**</span>
+
 # Contrast Modes
 
 ### Overlay Mode  
