@@ -5,12 +5,12 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 1. **Blend Modes**: Applies an image to another image using a blend mode operation. Every conceivable blend mode is available!
 2. **Solid Color Image**: This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
 3. **SplitRGB**: This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
-4. **MergeRGB**: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects!
+4. **MergeRGB**: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
 <br>
 
 ## Blend Modes
 
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/baf71856-aefa-4ffb-9972-fc0b7e165956)
+![Blend Modes Node Image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/baf71856-aefa-4ffb-9972-fc0b7e165956)
 
 This node gives access to thirty different blend modes, and includes a scaling option for the top layer and the ability to use external masks.
 
@@ -49,13 +49,13 @@ These nodes split apart images into their component color channels and merge the
 - **image**: The image to split on the Split RGB node, and the merged image on the Merge RGB node
 - **red, green, blue**: The separate images holding the red, green, and blue channels of the image. Note that there is nothing stopping you from using any images you want here on the Merge RGB node-- the node will only take the indicated color channel from each image.
   
-### Installation:
+# Installation:
 
 1. Git clone this repo into a folder in ComfyUI\custom_nodes
 2. pip install -r requirements.txt
 
-Learn about the math behind the blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes
-A practical discussion of the blend modes here: https://www.youtube.com/watch?v=i1D9ijh3_-I
+Learn about the math behind blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes
+A practical discussion of the blend modes is here: https://www.youtube.com/watch?v=i1D9ijh3_-I
 
 **Please let me know if you have any thoughts or suggestions!**
 <br><br>
@@ -64,7 +64,7 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 # Examples
 Normal Modes: [Normal](https://github.com/chrisfreilich/virtuoso-nodes/tree/main#normal-mode), [Dissolve](https://github.com/chrisfreilich/virtuoso-nodes/edit/tree/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)  
 Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#color-burn-mode), [Linear Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#linear-burn-mode), [Darker Color](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darker-color-mode)  
-Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#screen-mode)
+Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#screen-mode)
 
 ### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
@@ -86,12 +86,6 @@ Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/ma
 
 ### Darker Color Mode
 ![Darker Color Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0c5be8f6-a761-4fa5-8484-eca6102a7b80)
-
-### Lighten Mode
-![Lighten Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/ac05104d-6d64-4084-a44c-a78b51745ce9)
-
-### Screen Mode
-![Screen Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
 
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
