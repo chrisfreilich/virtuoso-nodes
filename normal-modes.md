@@ -3,6 +3,7 @@
 &nbsp;&nbsp;[Darken](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/darken-modes.md)
 &nbsp;&nbsp;[Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md)
 &nbsp;&nbsp;[Contrast](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/contrast-modes.md)
+&nbsp;&nbsp;[Inversion](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/inversion-modes.md)
 &nbsp;&nbsp;[Component](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/component-modes.md)
 &nbsp;&nbsp;[Specialty](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/specialty-mode.md)**</span>
 
