@@ -8,3 +8,7 @@
 
 ### Color Dodge Mode
 ![Color Dodge Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/b9a8b5df-255e-4825-ab68-ddbfa1c584e0)
+
+### Linear Dodge (Add) Mode
+![Linear Dodge (Add) Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/7e907b0d-a04c-44cd-8418-96b78646181b)
+
