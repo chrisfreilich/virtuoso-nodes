@@ -61,13 +61,19 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 <br><br>
 
 
-## Examples
+# Examples
 
-**Normal Mode**
+### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
 
-**Dissolve Mode** *(not terribly useful on its own, used here with a second screen blend mode)*
+### Dissolve Mode *(not terribly useful on its own, used here with a second screen blend mode)*
 ![Dissolve Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/783ac2aa-7532-4ca2-a1ef-78ba5aa7d4fd)
+
+### Darken Mode  
+![Darken Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/c4dc2918-d346-4731-94a8-da6920ea75e3)
+
+### Multiply Mode  
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/8b49c096-d189-4228-a297-fcf72260e6f5)
 
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
@@ -90,11 +96,11 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 **Addition (aka Linear Dodge) Mode**
 ![Addition Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/1d6c94c5-6b52-4a1f-a99b-f12b535d478c)
 
-**Darken Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/f62c784f-63e8-4786-8fa1-b5ffe729fb4e)
 
-**Multiply Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/844852a1-a946-4c69-89d5-6f3bb6f40ef5)
+
+
+
+
 
 **Hard Light Mode**
 ![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
