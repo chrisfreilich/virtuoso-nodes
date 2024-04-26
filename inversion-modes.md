@@ -1,17 +1,13 @@
 # Inversion Modes
 
 ### Difference Mode  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
+![Difference Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
 
 ### Exclusion Mode
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
+![Exclusion Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/196db81d-6797-4fdb-805e-4674a55bbb14)
 
+### Subtract Mode
+![Subtract Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/566b19ea-663e-4a8e-9924-85e2e213a67d)
 
-
-**Subtract Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/566b19ea-663e-4a8e-9924-85e2e213a67d)
-
-
-
-**Divide Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/14100f42-b5a4-4be3-8a61-cde77b53e65c)
+### Divide Mode
+![Divide Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e3ac99-9d91-491f-ab65-0c4ce667c307)
