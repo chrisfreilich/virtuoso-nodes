@@ -13,3 +13,5 @@
 ### Linear Light Mode
 ![Linear Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/377f4327-dbe4-49e8-a2db-916b0e895d76)
 
+### Pin Light Mode
+![Pin Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/985b046f-0d45-4041-b16f-3b5f2ccc9042)
