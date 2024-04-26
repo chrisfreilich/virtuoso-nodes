@@ -63,6 +63,9 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 
 # Examples
 
+## Quick Access
+Normal Modes: [Normal Mode](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md#normal-mode), [Dissolve Mode](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)
+
 ### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
 
