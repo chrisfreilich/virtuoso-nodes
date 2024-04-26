@@ -7,3 +7,7 @@
 ### Hard Light Mode  
 ![Hard Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/4b6d41d0-3110-4a2a-9ef5-77f0322f77bc)
 
+### Vivid Light Mode
+![Vivid Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/bc7ca5d7-e98d-4654-9ecd-b1c0c6ff6dd5)
+
+
