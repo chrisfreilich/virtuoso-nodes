@@ -73,11 +73,7 @@ Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/ma
 **Exclusion Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
 
-**Soft Light Mode**
-![Soft Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/079c6d67-faef-47ca-9835-27b1c1234dfb)
 
-**Hard Light Mode**
-![Hard Light Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/97eccf07-2369-4cae-bd24-0b035fb3fbbf)
 
 **Subtract Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/566b19ea-663e-4a8e-9924-85e2e213a67d)
@@ -87,6 +83,5 @@ Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/ma
 **Divide Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/14100f42-b5a4-4be3-8a61-cde77b53e65c)
 
-**Overlay Mode**  
-![Overlay Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/de63d31c-99e9-434c-ad97-84767f9cac09)
+
 
