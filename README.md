@@ -64,7 +64,7 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 # Examples
 Normal Modes: [Normal](https://github.com/chrisfreilich/virtuoso-nodes/tree/main#normal-mode), [Dissolve](https://github.com/chrisfreilich/virtuoso-nodes/edit/tree/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)  
 Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#color-burn-mode), [Linear Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#linear-burn-mode), [Darker Color](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darker-color-mode)  
-Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/tree/main#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#screen-mode)
+Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#screen-mode)
 
 ### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
