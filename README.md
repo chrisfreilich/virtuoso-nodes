@@ -62,9 +62,8 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 
 
 # Examples
-
-## Quick Access
-Normal Modes: [Normal Mode](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md#normal-mode), [Dissolve Mode](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)
+Normal Modes: [Normal](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md#normal-mode), [Dissolve](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)  
+Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/edit/main/README.md#color-burn-mode)
 
 ### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
@@ -76,7 +75,11 @@ Normal Modes: [Normal Mode](https://github.com/chrisfreilich/virtuoso-nodes/blob
 ![Darken Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/c4dc2918-d346-4731-94a8-da6920ea75e3)
 
 ### Multiply Mode  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/8b49c096-d189-4228-a297-fcf72260e6f5)
+![Multiply Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/8b49c096-d189-4228-a297-fcf72260e6f5)
+
+### Color Burn Mode
+![Color Burn Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/011a398a-4f64-46d6-ad2c-6359c1e88d3a)
+
 
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
