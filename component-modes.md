@@ -10,5 +10,4 @@
 ![Color Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/579aa697-43d7-4aa5-a59c-9b143a696c95)
 
 ### Luminosity Mode
-
-
+![Luminosity Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/c573b614-1e57-4c5d-83a1-b1031c2153fb)
