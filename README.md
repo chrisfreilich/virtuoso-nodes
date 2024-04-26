@@ -63,7 +63,8 @@ A practical discussion of the blend modes here: https://www.youtube.com/watch?v=
 
 # Examples
 Normal Modes: [Normal](https://github.com/chrisfreilich/virtuoso-nodes/tree/main#normal-mode), [Dissolve](https://github.com/chrisfreilich/virtuoso-nodes/edit/tree/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)  
-Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#color-burn-mode), [Linear Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#linear-burn-mode), [Darker Color](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darker-color-mode)
+Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#color-burn-mode), [Linear Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#linear-burn-mode), [Darker Color](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darker-color-mode)  
+Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#screen-mode)
 
 ### Normal Mode
 ![Normal Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/fd400439-51f3-40a0-b5a3-2c7ff3d78f61)
@@ -86,6 +87,11 @@ Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main
 ### Darker Color Mode
 ![Darker Color Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0c5be8f6-a761-4fa5-8484-eca6102a7b80)
 
+### Lighten Mode
+![Lighten Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/ac05104d-6d64-4084-a44c-a78b51745ce9)
+
+### Screen Mode
+![Screen Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
 
 **Difference Mode**
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
@@ -93,14 +99,10 @@ Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main
 **Exclusion Mode**  
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
 
-**Screen Mode**
-![Screen Blending Mode example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/594b788d-49f4-4bfc-8b9d-445e2436f6d9)
-
 **Soft Light Mode**
 ![Soft Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/079c6d67-faef-47ca-9835-27b1c1234dfb)
 
-**Lighten Mode**
-![Lighten Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/ac05104d-6d64-4084-a44c-a78b51745ce9)
+
 
 **Dodge Mode**
 ![Dodge Blending Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/747899e7-896d-49cc-af4f-8c914bb3ea8c)
