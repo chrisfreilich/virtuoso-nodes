@@ -1,3 +1,5 @@
+# Contrast Modes
+
 ### Overlay Mode  
 ![Overlay Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/9ea6c990-746e-42c6-a6b8-748bd116f363)
 
@@ -15,3 +17,6 @@
 
 ### Pin Light Mode
 ![Pin Light Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/985b046f-0d45-4041-b16f-3b5f2ccc9042)
+
+### Hard Mix Mode
+![Hard Mix Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/e4735c2e-7e17-4f07-949f-ffc050ad0087)
