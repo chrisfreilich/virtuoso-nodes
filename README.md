@@ -24,7 +24,13 @@ This node gives access to thirty different blend modes, and includes a scaling o
      - *Stretch* will change each dimension independently just as much as needed to match that dimension, potentially changing the aspect ratio of the source image and causing distortion.
      - *Crop* will maintain the aspect ratio of the source image, and resize it until it just covers the backdrop image, then crop what doesn't fit.
 - **blend_mode**: normal is the default blend mode.
-<br>
+
+### Examples
+[Normal Modes] [Component Modes]
+
+Learn about the math behind blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes  
+A practical discussion of the blend modes is here: https://www.youtube.com/watch?v=i1D9ijh3_-I
+<br><br>
 
 ## Solid Color Image
 
@@ -54,34 +60,9 @@ These nodes split apart images into their component color channels and merge the
 1. Git clone this repo into a folder in ComfyUI\custom_nodes
 2. pip install -r requirements.txt
 
-Learn about the math behind blend modes here: https://learning.hccs.edu/faculty/bradly.brown/arts2348/handouts/blending-modes
-A practical discussion of the blend modes is here: https://www.youtube.com/watch?v=i1D9ijh3_-I
-
 **Please let me know if you have any thoughts or suggestions!**
 <br><br>
 
-
-# Examples
-Normal Modes: [Normal](https://github.com/chrisfreilich/virtuoso-nodes/tree/main#normal-mode), [Dissolve](https://github.com/chrisfreilich/virtuoso-nodes/edit/tree/README.md#dissolve-mode-not-terribly-useful-on-its-own-used-here-with-a-second-screen-blend-mode)  
-Darken Modes: [Darken](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darken-mode), [Multiply](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#multiply-mode), [Color Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#color-burn-mode), [Linear Burn](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#linear-burn-mode), [Darker Color](https://github.com/chrisfreilich/virtuoso-nodes/tree/main/README.md#darker-color-mode)  
-Lighten Modes: [Lighten](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#lighten-mode), [Screen](https://github.com/chrisfreilich/virtuoso-nodes/blob/main/lighten-modes.md#screen-mode)
-
-
-**Difference Mode**
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/02e939ab-fcd1-4f05-a5ce-8a333a32cf9e)
-
-**Exclusion Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/2bd9f600-160c-4087-b2c7-ae0285bb6b3e)
-
-
-
-**Subtract Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/566b19ea-663e-4a8e-9924-85e2e213a67d)
-
-
-
-**Divide Mode**  
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/14100f42-b5a4-4be3-8a61-cde77b53e65c)
 
 
 
