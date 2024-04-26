@@ -12,3 +12,5 @@
 ### Linear Dodge (Add) Mode
 ![Linear Dodge (Add) Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/7e907b0d-a04c-44cd-8418-96b78646181b)
 
+### Lighter Color Mode
+![Lighter Color Mode Example](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/f37bdc8f-ab39-49dd-8946-1535d6fcdf89)
