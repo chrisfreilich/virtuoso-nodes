@@ -1,9 +1,9 @@
-'''
-    COLORS.PY
-    class SolidColor is a ComfyUI node to create solid color images.
-    class SplitRGB is a ComfyUI node to split an image into three images with just one color channel.
-    https://github.com/chrisfreilich/virtuoso-nodes/blob/main/README.md
-'''
+"""
+@author: Chris Freilich
+@title: Virtuoso Pack - Color Nodes
+@nickname: Virtuoso Pack -Color Nodes
+@description: This extension provides a solid color node, SplitRGB and MergeRGB nodes.
+"""
 import torch
 
 class SolidColor():
