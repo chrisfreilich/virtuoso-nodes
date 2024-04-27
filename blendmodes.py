@@ -238,7 +238,7 @@ modes = {
     "luminosity": luminance
 }
 
-class Blend:
+class BlendModes:
     
     def __init__(self):
         pass

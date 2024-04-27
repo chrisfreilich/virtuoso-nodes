@@ -1,17 +1,17 @@
-from .blend import Blend
+from .blendmodes import BlendModes
 from .colors import SolidColor
 from .colors import SplitRGB
 from .colors import MergeRGB
 
 NODE_CLASS_MAPPINGS = {
-    "Blend": Blend,
+    "BlendModes": BlendModes,
     "SolidColor": SolidColor,
     "SplitRGB": SplitRGB,
     "MergeRGB": MergeRGB
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Blend": "Blend Modes",
+    "BlendModes": "Blend Modes",
     "SolidColor": "Solid Color Image",
     "SplitRGB": "Split RGB",
     "MergeRGB": "Merge RGB"
