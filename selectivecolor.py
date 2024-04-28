@@ -8,8 +8,6 @@ import torch
 import torchvision.transforms as transforms
 import subprocess
 import imageio
-import os
-import numpy as np
 import tempfile
 
 class SelectiveColor:
@@ -61,7 +59,7 @@ class SelectiveColor:
     CATEGORY = "Virtuoso"
     
     def do_selectivecolor(self, image, color_range, cyan, magenta, yellow, black, method):
-        # Initialize a list to store the output tensors
+        
         output_tensors = []
 
         # Create a temporary directory using the tempfile module
@@ -69,7 +67,7 @@ class SelectiveColor:
 
             # Iterate over each image in the batch
             for i in range(image.shape[0]):
-                # Select the image from the batch
+                
                 batch_image = image[i]
 
                 # Permute the dimensions to be in the format expected by ToPILImage (C x H x W)
@@ -80,9 +78,9 @@ class SelectiveColor:
                 img_pil.save(f"{tmpdirname}/temp{i}.png")
 
                 # Construct the ffmpeg command
-                command = ["ffmpeg", "-i", f"{tmpdirname}/temp{i}.png", "-vf", "selectivecolor="]
-                command[-1] += f"{method}:{color_range}={cyan} {magenta} {yellow} {black}"
-                command.append(f"{tmpdirname}/output{i}.png")
+                command = ["ffmpeg", "-i", f"{tmpdirname}/temp{i}.png", "-vf"]
+                command.append(f"selectivecolor={method}:{color_range}={cyan} {magenta} {yellow} {black}")
+                command.extend(["-update", "1", f"{tmpdirname}/output{i}.png"])
 
                 # Run the ffmpeg command
                 subprocess.run(command)
