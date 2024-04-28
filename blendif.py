@@ -34,6 +34,7 @@ class BlendIf:
             "required": {
                 "top_layer": ("IMAGE",),
                 "bottom_layer": ("IMAGE",),
+                "blend_if_layer": (["top", "bottom"],),
                 "blend_if_channel": (["gray", "red", "green", "blue"],),
                 "start_rise": ("FLOAT", {
                     "default": 0.0,
@@ -82,7 +83,7 @@ class BlendIf:
     FUNCTION = "do_blendif"
     CATEGORY = "Virtuoso"
 
-    def do_blendif(self, top_layer, bottom_layer, blend_if_channel, start_rise, end_rise, start_fall, end_fall, opacity, match_size, invert_mask, mask=None):
+    def do_blendif(self, top_layer, bottom_layer, blend_if_layer, blend_if_channel, start_rise, end_rise, start_fall, end_fall, opacity, match_size, invert_mask, mask=None):
         # Ensure the parameters are in order
         parameters = [end_fall, start_fall, end_rise, start_rise]
         for i in range(len(parameters) - 1):
@@ -116,11 +117,17 @@ class BlendIf:
 
         # Calculate the base opacity
         if blend_if_channel == 'gray':
-            luminosity = 0.2126 * top_layer[..., 0] + 0.7152 * top_layer[..., 1] + 0.0722 * top_layer[..., 2]
+            if blend_if_layer == 'bottom':
+                luminosity = 0.2126 * bottom_layer[..., 0] + 0.7152 * bottom_layer[..., 1] + 0.0722 * bottom_layer[..., 2]
+            else:  # blend_if_layer == 'top'
+                luminosity = 0.2126 * top_layer[..., 0] + 0.7152 * top_layer[..., 1] + 0.0722 * top_layer[..., 2]
             base_opacity = calculate_opacity(luminosity, start_rise, end_rise, start_fall, end_fall)
         else:
             channel_index = {'red': 0, 'green': 1, 'blue': 2}[blend_if_channel]
-            base_opacity = calculate_opacity(top_layer[..., channel_index], start_rise, end_rise, start_fall, end_fall)
+            if blend_if_layer == 'bottom':
+                base_opacity = calculate_opacity(bottom_layer[..., channel_index], start_rise, end_rise, start_fall, end_fall)
+            else:  # blend_if_layer == 'top'
+                base_opacity = calculate_opacity(top_layer[..., channel_index], start_rise, end_rise, start_fall, end_fall)
 
         # Apply the mask and the opacity parameter
         if mask is not None:
