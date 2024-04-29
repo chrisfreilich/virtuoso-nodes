@@ -178,17 +178,18 @@ class ColorBalance():
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
-                    "display": "number"})                                      
+                    "display": "number"}),
+                "preserve_luminosity": ("BOOLEAN", {"default": True})
             }
         }
 
     def do_color_balance(self, image, lows_cyan_red, lows_magenta_green, lows_yellow_blue, 
                                       mids_cyan_red, mids_magenta_green, mids_yellow_blue,
-                                      highs_cyan_red, highs_magenta_green, highs_yellow_blue):
+                                      highs_cyan_red, highs_magenta_green, highs_yellow_blue, preserve_luminosity):
         return (color_balance(image, 
                               [lows_cyan_red, lows_magenta_green, lows_yellow_blue], 
                               [mids_cyan_red, mids_magenta_green, mids_yellow_blue], 
-                              [highs_cyan_red, highs_magenta_green, highs_yellow_blue]), )
+                              [highs_cyan_red, highs_magenta_green, highs_yellow_blue], preserve_luminosity=preserve_luminosity), )
 
 class ColorBalanceAdvanced():
     NAME = "Color Balance Advanced"
@@ -240,9 +241,13 @@ class ColorBalanceAdvanced():
 
 
 
-def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.5, highlight_center=0.8, shadow_max=0.1, midtone_max=0.3, highlight_max=0.2):
+def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.5, highlight_center=0.8, shadow_max=0.1, midtone_max=0.3, highlight_max=0.2, preserve_luminosity=False):
     # Create a copy of the img tensor
     img_copy = img.clone()
+
+    # Calculate the original luminance if preserve_luminosity is True
+    if preserve_luminosity:
+        original_luminance = 0.2126 * img_copy[..., 0] + 0.7152 * img_copy[..., 1] + 0.0722 * img_copy[..., 2]
 
     # Define the adjustment curves
     def adjust(x, center, value, max_adjustment):
@@ -264,5 +269,10 @@ def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midton
         img_copy[..., i] = adjust(img_copy[..., i], shadow_center, s, shadow_max)
         img_copy[..., i] = adjust(img_copy[..., i], midtone_center, m, midtone_max)
         img_copy[..., i] = adjust(img_copy[..., i], highlight_center, h, highlight_max)
+
+    # If preserve_luminosity is True, adjust the RGB values to match the original luminance
+    if preserve_luminosity:
+        current_luminance = 0.2126 * img_copy[..., 0] + 0.7152 * img_copy[..., 1] + 0.0722 * img_copy[..., 2]
+        img_copy *= (original_luminance / current_luminance).unsqueeze(-1)
 
     return img_copy
