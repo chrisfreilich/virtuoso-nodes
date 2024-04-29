@@ -189,7 +189,57 @@ class ColorBalance():
                               [lows_cyan_red, lows_magenta_green, lows_yellow_blue], 
                               [mids_cyan_red, mids_magenta_green, mids_yellow_blue], 
                               [highs_cyan_red, highs_magenta_green, highs_yellow_blue]), )
-    
+
+class ColorBalanceAdvanced():
+    NAME = "Color Balance Advanced"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_color_balance"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "brightness_target": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.001,
+                    "max": 0.999,
+                    "step": 0.001,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "cyan_red": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "magenta_green": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "yellow_blue": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),                                  
+            }
+        }
+
+    def do_color_balance(self, image, brightness_target, cyan_red, magenta_green, yellow_blue):
+        return (color_balance(image, 
+                              [0, 0, 0], 
+                              [cyan_red, magenta_green,yellow_blue], 
+                              [0, 0, 0], 0.15, brightness_target, 0.8, 0.1, 1), )
+
+
+
 def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.5, highlight_center=0.8, shadow_max=0.1, midtone_max=0.3, highlight_max=0.2):
     # Create a copy of the img tensor
     img_copy = img.clone()
