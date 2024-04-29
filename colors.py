@@ -229,16 +229,16 @@ class ColorBalanceAdvanced():
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
-                    "display": "number"}),                                  
+                    "display": "number"}),  
+                "preserve_luminosity": ("BOOLEAN", {"default": True})
             }
         }
 
-    def do_color_balance(self, image, brightness_target, cyan_red, magenta_green, yellow_blue):
+    def do_color_balance(self, image, brightness_target, cyan_red, magenta_green, yellow_blue, preserve_luminosity):
         return (color_balance(image, 
                               [0, 0, 0], 
                               [cyan_red, magenta_green,yellow_blue], 
-                              [0, 0, 0], 0.15, brightness_target, 0.8, 0.1, 1), )
-
+                              [0, 0, 0], 0.15, brightness_target, midtone_max=1, preserve_luminosity=preserve_luminosity), )
 
 
 def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.5, highlight_center=0.8, shadow_max=0.1, midtone_max=0.3, highlight_max=0.2, preserve_luminosity=False):
