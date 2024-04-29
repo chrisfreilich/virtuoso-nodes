@@ -68,7 +68,7 @@ This feature composites the top_layer image over the bottom_layer image based on
 
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/667feff0-3237-4567-ae20-03ee91bc2330)
 
-This feature allows you to adjust the color balance of a specified range of colors or brightness in an image.
+This feature allows you to adjust the color balance of a specified range of colors or brightness in an image. This node can be chained to affect different color ranges.
 
 ### Node input controls:
 
@@ -81,6 +81,23 @@ This feature allows you to adjust the color balance of a specified range of colo
 
 <br>
 
+
+## Color Balance Node
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/4b30e2ab-54a2-445a-8266-f25cb30d3406)
+
+This feature allows you to finelyy adjust the color balance of the shadows, midtones, and highlights of an image. It reproduces the Photoshop functionality of the Color Balance layer.
+
+### Node input controls:
+
+- **image**: This is image to be adjusted.
+- **color_range**: This selects which range of colors or gray values will be affected.
+- **cyan, magenta, yellow, black**: These inputs control how much of each secondary color or black is added or removed from the color range selected.
+- **method**: 'absolute' will directly apply the change, whereas 'relative' will apply the change as a percentage of the current value, resulting in a subtler effect.
+
+[Good reference on selective color](https://fstoppers.com/photoshop/selective-color-possibly-best-tool-photographers-7954) 
+
+<br>
 
 ## Solid Color Image
 
