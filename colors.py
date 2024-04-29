@@ -5,6 +5,7 @@
 @description: This extension provides a solid color node, SplitRGB and MergeRGB nodes.
 """
 import torch
+from scipy.interpolate import CubicSpline
 
 class SolidColor():
     NAME = "Solid Color"
@@ -103,3 +104,112 @@ class MergeRGB():
 
         return (img,)
       
+
+class ColorBalance():
+    NAME = "Color Balance"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_color_balance"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "lows_red_cyan": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "lows_green_magenta": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "lows_blue_yellow": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                 "mids_red_cyan": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "mids_green_magenta": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "mids_blue_yellow": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}), 
+                "highs_red_cyan": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "highs_green_magenta": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "highs_blue_yellow": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),                                      
+            }
+        }
+
+    def do_color_balance(self, image, lows_red_cyan, lows_green_magenta, lows_blue_yellow, 
+                                      mids_red_cyan, mids_green_magenta, mids_blue_yellow,
+                                      highs_red_cyan, highs_green_magenta, highs_blue_yellow):
+        return (color_balance(image, 
+                              [lows_red_cyan, lows_green_magenta, lows_blue_yellow], 
+                              [mids_red_cyan, mids_green_magenta, mids_blue_yellow], 
+                              [highs_red_cyan, highs_green_magenta, highs_blue_yellow]), )
+
+def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.38, highlight_center=0.7, shadow_max=0.1, midtone_max=0.2, highlight_max=0.1):
+    # Define the adjustment curves
+    def adjust(x, center, value, max_adjustment):
+        # Scale the adjustment value
+        value = value * max_adjustment
+        
+        # Define control points
+        points = torch.tensor([[0, 0], [center, center + value], [1, 1]])
+        
+        # Create cubic spline
+        cs = CubicSpline(points[:, 0], points[:, 1])
+        
+        # Apply the cubic spline to the color channel
+        return torch.clamp(torch.from_numpy(cs(x)), 0, 1)
+
+    # Apply the adjustments to each color channel
+    # shadows, midtones, highlights are lists of length 3 (for R, G, B channels) with values between -1 and 1
+    for i, (s, m, h) in enumerate(zip(shadows, midtones, highlights)):
+        img[..., i] = adjust(img[..., i], shadow_center, s, shadow_max)
+        img[..., i] = adjust(img[..., i], midtone_center, m, midtone_max)
+        img[..., i] = adjust(img[..., i], highlight_center, h, highlight_max)
+
+    return img   
