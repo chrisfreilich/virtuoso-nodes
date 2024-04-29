@@ -96,6 +96,20 @@ This feature allows you to finely adjust the color balance of the shadows, midto
 - **preserve luminosity**: This will maintain the brightness of the image while adjusting the relative color values. This will help prevent clipping of brightness values, while making the overall effect more subtle.
 <br>
 
+## Color Balance Advanced Node
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/31bc0abe-547e-476f-a8fa-53ad5407e291)
+
+This node allows you to target a specific brightness as the center of an adjustment range, and gives full range of adjustment. Unlike the standard Color Balance Node, it is easy to create distorted corrections with this node if you are not careful.
+
+### Node input controls:
+
+- **image**: This is image to be adjusted.
+- **brightness_target**: What brightness level the correction should be centered on. 0 is black and 1 is white. This brightness level will receive the strongest correction, tapering off for brighter and darker pixels.
+- **cyan_red, magenta_green, yellow_blue**: These suffixes indicate the color axis the adjustment will work on. -1 will be the most cyan/magenta/yellow possible, and 1 will be the most red/green/blue possible. Unlike the standard Color Balance Mode, these adjustments are unrestricted, so less is more!
+- **preserve luminosity**: This will maintain the brightness of the image while adjusting the relative color values. This will help prevent clipping of brightness values, while making the overall effect more subtle.
+<br>
+
 ## Solid Color Image
 
 ![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/d2fea774-a390-4adc-a2d5-4f475c508acf)
