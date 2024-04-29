@@ -5,7 +5,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 1. [**Blend Modes**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-modes): Applies an image to another image using a blend mode operation. Every conceivable blend mode is available.
 2. [**Blend If**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-if-node): Composites one image on top of another with transparency based on several parameters.
 3. [**Selective Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#selective-color-node): Adjust the color of a specific color or brightness range in an image, as with Photoshop's Selective Color adjustment layer.
-4. [**Color Balance**](): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
+4. [**Color Balance**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-node): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
 5. [**Color Balance Advanced**](): Color balance of a targeted brightness range.
 6. [**Solid Color Image**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#solid-color-image): This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
 7. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
