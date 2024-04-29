@@ -12,7 +12,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 8. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
 <br>
 
-[Installation Instructions]()
+[Installation Instructions](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 
 ## Blend Modes
 
