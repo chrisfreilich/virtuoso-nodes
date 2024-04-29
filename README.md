@@ -84,19 +84,16 @@ This feature allows you to adjust the color balance of a specified range of colo
 
 ## Color Balance Node
 
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/4b30e2ab-54a2-445a-8266-f25cb30d3406)
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/18963b51-2fc9-41e0-b6d8-b007d1d53853)
 
-This feature allows you to finelyy adjust the color balance of the shadows, midtones, and highlights of an image. It reproduces the Photoshop functionality of the Color Balance layer.
+This feature allows you to finely adjust the color balance of the shadows, midtones, and highlights of an image. It reproduces the Photoshop functionality of the Color Balance layer.
 
 ### Node input controls:
 
 - **image**: This is image to be adjusted.
-- **color_range**: This selects which range of colors or gray values will be affected.
-- **cyan, magenta, yellow, black**: These inputs control how much of each secondary color or black is added or removed from the color range selected.
-- **method**: 'absolute' will directly apply the change, whereas 'relative' will apply the change as a percentage of the current value, resulting in a subtler effect.
-
-[Good reference on selective color](https://fstoppers.com/photoshop/selective-color-possibly-best-tool-photographers-7954) 
-
+- **lows, mids, highs**: Each of these prefixes indicates the brightness range on which the correction will have the greatest effect.
+- **cyan_red, magenta_green, yellow_blue**: These suffixes indicate the color axis the adjustment will work on. -1 will be the most cyan/magenta/yellow possible, and 1 will be the most red/green/blue possible.
+- **preserve luminosity**: This will maintain the brightness of the image while adjusting the relative color values. This will help prevent clipping of brightness values, while making the overall effect more subtle.
 <br>
 
 ## Solid Color Image
