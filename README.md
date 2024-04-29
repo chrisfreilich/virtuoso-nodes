@@ -2,11 +2,17 @@
 
 This set of nodes is designed to give some Photoshop-like functionality within ComfyUI. The nodes available are:
 
-1. [**Blend Modes**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-modes): Applies an image to another image using a blend mode operation. Every conceivable blend mode is available!
+1. [**Blend Modes**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-modes): Applies an image to another image using a blend mode operation. Every conceivable blend mode is available.
+2. [**Blend If**](): Composites one image on top of another with transparency based on several parameters.
+3. [**Selective Color**](): Adjust the color of a specific color or brightness range in an image, as with Photoshop's Selective Color adjustment layer.
+4. [**Color Balance**](): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
+5. [**Color Balance Advanced**](): Color balance of a targeted brightness range.
 6. [**Solid Color Image**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#solid-color-image): This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
-7. **SplitRGB**: This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
-8. **MergeRGB**: This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
+7. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
+8. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
 <br>
+
+[Installation Instructions]()
 
 ## Blend Modes
 
@@ -135,8 +141,9 @@ These nodes split apart images into their component color channels and merge the
   
 # Installation:
 
-1. Git clone this repo into a folder in ComfyUI\custom_nodes
-2. pip install -r requirements.txt
+1. Git clone this repo into a folder in ComfyUI\custom_nodes.
+2. pip install -r requirements.txt.
+3. [Install FFmpeg](https://ffmpeg.org/download.html), which is required for the Selective Color Node.
 
 **Please let me know if you have any thoughts or suggestions!**
 <br><br>
