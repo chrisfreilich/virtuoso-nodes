@@ -116,81 +116,84 @@ class ColorBalance():
         return {
             "required": {
                 "image": ("IMAGE",),
-                "lows_red_cyan": ("FLOAT", {
+                "lows_cyan_red": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "lows_green_magenta": ("FLOAT", {
+                "lows_magenta_green": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "lows_blue_yellow": ("FLOAT", {
+                "lows_yellow_blue": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                 "mids_red_cyan": ("FLOAT", {
+                 "mids_cyan_red": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "mids_green_magenta": ("FLOAT", {
+                "mids_magenta_green": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "mids_blue_yellow": ("FLOAT", {
+                "mids_yellow_blue": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}), 
-                "highs_red_cyan": ("FLOAT", {
+                "highs_cyan_red": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "highs_green_magenta": ("FLOAT", {
+                "highs_magenta_green": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
                     "display": "number"}),
-                "highs_blue_yellow": ("FLOAT", {
+                "highs_yellow_blue": ("FLOAT", {
                     "default": 0,
                     "min": -1.0,
                     "max": 1.0,
                     "step": 0.01,
                     "round": 0.001, 
-                    "display": "number"}),                                      
+                    "display": "number"})                                      
             }
         }
 
-    def do_color_balance(self, image, lows_red_cyan, lows_green_magenta, lows_blue_yellow, 
-                                      mids_red_cyan, mids_green_magenta, mids_blue_yellow,
-                                      highs_red_cyan, highs_green_magenta, highs_blue_yellow):
+    def do_color_balance(self, image, lows_cyan_red, lows_magenta_green, lows_yellow_blue, 
+                                      mids_cyan_red, mids_magenta_green, mids_yellow_blue,
+                                      highs_cyan_red, highs_magenta_green, highs_yellow_blue):
         return (color_balance(image, 
-                              [lows_red_cyan, lows_green_magenta, lows_blue_yellow], 
-                              [mids_red_cyan, mids_green_magenta, mids_blue_yellow], 
-                              [highs_red_cyan, highs_green_magenta, highs_blue_yellow]), )
+                              [lows_cyan_red, lows_magenta_green, lows_yellow_blue], 
+                              [mids_cyan_red, mids_magenta_green, mids_yellow_blue], 
+                              [highs_cyan_red, highs_magenta_green, highs_yellow_blue]), )
+    
+def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.5, highlight_center=0.8, shadow_max=0.1, midtone_max=0.3, highlight_max=0.2):
+    # Create a copy of the img tensor
+    img_copy = img.clone()
 
-def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midtone_center=0.38, highlight_center=0.7, shadow_max=0.1, midtone_max=0.2, highlight_max=0.1):
     # Define the adjustment curves
     def adjust(x, center, value, max_adjustment):
         # Scale the adjustment value
@@ -208,8 +211,8 @@ def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midton
     # Apply the adjustments to each color channel
     # shadows, midtones, highlights are lists of length 3 (for R, G, B channels) with values between -1 and 1
     for i, (s, m, h) in enumerate(zip(shadows, midtones, highlights)):
-        img[..., i] = adjust(img[..., i], shadow_center, s, shadow_max)
-        img[..., i] = adjust(img[..., i], midtone_center, m, midtone_max)
-        img[..., i] = adjust(img[..., i], highlight_center, h, highlight_max)
+        img_copy[..., i] = adjust(img_copy[..., i], shadow_center, s, shadow_max)
+        img_copy[..., i] = adjust(img_copy[..., i], midtone_center, m, midtone_max)
+        img_copy[..., i] = adjust(img_copy[..., i], highlight_center, h, highlight_max)
 
-    return img   
+    return img_copy
