@@ -10,9 +10,9 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 6. [**Solid Color Image**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#solid-color-image): This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
 7. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
 8. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
-<br>
 
-[Installation Instructions](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
+[**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
+<br><br>
 
 ## Blend Modes
 
