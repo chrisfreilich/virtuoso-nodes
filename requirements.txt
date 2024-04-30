@@ -2,3 +2,4 @@ numpy
 blend_modes
 Pillow
 torch
+scipy
