@@ -1,7 +1,6 @@
 from .blendmodes import BlendModes
 from .selectivecolor import SelectiveColor
 from .blendif import BlendIf
-from .colors import SolidColor
 from .colors import SplitRGB
 from .colors import MergeRGB
 from .colors import ColorBalance
@@ -13,7 +12,6 @@ NODE_CLASS_MAPPINGS = {
     "BlendIf": BlendIf,
     "ColorBalance": ColorBalance,
     "ColorBalanceAdvanced": ColorBalanceAdvanced,
-    "SolidColor": SolidColor,
     "SplitRGB": SplitRGB,
     "MergeRGB": MergeRGB
 }
@@ -24,7 +22,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BlendIf": "Blend If",
     "ColorBalance": "Color Balance",
     "ColorBalanceAdvanced": "Color Balance Advanced",
-    "SolidColor": "Solid Color Image",
     "SplitRGB": "Split RGB",
     "MergeRGB": "Merge RGB"
 }

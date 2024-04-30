@@ -7,9 +7,8 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 3. [**Selective Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#selective-color-node): Adjust the color of a specific color or brightness range in an image, as with Photoshop's Selective Color adjustment layer.
 4. [**Color Balance**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-node): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
 5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-advanced-node): Color balance of a targeted brightness range.
-6. [**Solid Color Image**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#solid-color-image): This node allows you to create an image of a single color. These can be very useful in conjunction with the blend modes.
-7. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
-8. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
+6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
+7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 <br><br>
@@ -114,18 +113,6 @@ This node allows you to target a specific brightness as the center of an adjustm
 - **brightness_target**: What brightness level the correction should be centered on. 0 is black and 1 is white. This brightness level will receive the strongest correction, tapering off for brighter and darker pixels.
 - **cyan_red, magenta_green, yellow_blue**: These suffixes indicate the color axis the adjustment will work on. -1 will be the most cyan/magenta/yellow possible, and 1 will be the most red/green/blue possible. Unlike the standard Color Balance Mode, these adjustments are unrestricted, so less is more!
 - **preserve luminosity**: This will maintain the brightness of the image while adjusting the relative color values. This will help prevent clipping of brightness values, while making the overall effect more subtle.
-<br>
-
-## Solid Color Image
-
-![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/d2fea774-a390-4adc-a2d5-4f475c508acf)
-
-This node creates an image of a single color. This can be particularly useful for many of the blend modes. When using as the source image of a blend mode mode, the size is unimportant as it will be stretched to fit.
-
-### Node controls:
-
-- **RGB**: You can enter the red, green, and blue levels manually, or use the circle on the right to bring up a color picker. The color picker window appears at the top left of the screen.
-- **size**: Enter the width and height of the image. If you're using the image as the source for a blending mode, you can set both values to 1 to save space, as it will be stretched to fit.
 <br>
 
 ## Split RGB and Merge RGB 
