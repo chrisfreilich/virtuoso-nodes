@@ -5,6 +5,7 @@ from .colors import SplitRGB
 from .colors import MergeRGB
 from .colors import ColorBalance
 from .colors import ColorBalanceAdvanced
+from .colors import BlackAndWhite
 from .contrast import Levels
 
 NODE_CLASS_MAPPINGS = {
@@ -15,7 +16,8 @@ NODE_CLASS_MAPPINGS = {
     "ColorBalance": ColorBalance,
     "ColorBalanceAdvanced": ColorBalanceAdvanced,
     "SplitRGB": SplitRGB,
-    "MergeRGB": MergeRGB
+    "MergeRGB": MergeRGB,
+    "BlackAndWhite": BlackAndWhite
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -26,7 +28,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ColorBalance": "Color Balance",
     "ColorBalanceAdvanced": "Color Balance Advanced",
     "SplitRGB": "Split RGB",
-    "MergeRGB": "Merge RGB"
+    "MergeRGB": "Merge RGB",
+    "BlackAndWhite": "Black and White"
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']

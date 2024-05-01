@@ -2,7 +2,8 @@
 @author: Chris Freilich
 @title: Virtuoso Pack - Color Nodes
 @nickname: Virtuoso Pack -Color Nodes
-@description: This extension provides a solid color node, SplitRGB and MergeRGB nodes.
+@description: This extension provides a solid color node, Color Balance Node, Color Balance Advanced Node,
+SplitRGB and MergeRGB nodes, and Black and White node.
 """
 import torch
 from scipy.interpolate import CubicSpline
@@ -276,3 +277,99 @@ def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midton
         img_copy *= (original_luminance / current_luminance).unsqueeze(-1)
 
     return img_copy
+
+class BlackAndWhite():
+    NAME = "Black and White"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_black_and_white"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "red": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "green": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "blue": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}), 
+                "cyan": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "magenta": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "yellow": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),                 
+            }
+        }
+
+    def do_black_and_white(self, image, red, green, blue, cyan, magenta, yellow):
+        """
+        Convert a color image to black and white with adjustable color weights.
+
+        Parameters:
+        img (torch.Tensor): Input image tensor with shape [batch size, height, width, number of channels]
+        red (float): Weight for red, range -1.0 to 1.0
+        green (float): Weight for green, range -1.0 to 1.0
+        blue (float): Weight for blue, range -1.0 to 1.0
+        cyan (float): Weight for cyan, range -1.0 to 1.0
+        magenta (float): Weight for magenta, range -1.0 to 1.0
+        yellow (float): Weight for yellow, range -1.0 to 1.0
+
+        Returns:
+        torch.Tensor: Black and white image tensor with values in range 0-1
+        """
+        # Calculate minimum color value across all color channels for each pixel
+        min_c, _ = image.min(dim=-1)
+
+        # Calculate differences between color channels and minimum color value
+        diff = image - min_c.unsqueeze(-1)
+
+        # Create masks for red, green, and blue pixels
+        red_mask = (diff[:, :, :, 0] == 0)
+        green_mask = torch.logical_and((diff[:, :, :, 1] == 0), ~red_mask)
+        blue_mask = ~torch.logical_or(red_mask, green_mask)
+
+        # Calculate c, m, and yel values
+        c, _ = diff[:, :, :, 1:].min(dim=-1)
+        m, _ = diff[:, :, :, [0, 2]].min(dim=-1)
+        yel, _ = diff[:, :, :, :2].min(dim=-1)
+
+        # Calculate luminance using vectorized operations
+        luminance = min_c + red_mask * (c * cyan + (diff[:, :, :, 1] - c) * green + (diff[:, :, :, 2] - c) * blue)
+        luminance += green_mask * (m * magenta + (diff[:, :, :, 0] - m) * red + (diff[:, :, :, 2] - m) * blue)
+        luminance += blue_mask * (yel * yellow + (diff[:, :, :, 0] - yel) * red + (diff[:, :, :, 1] - yel) * green)
+
+        # Clip luminance values to be between 0 and 1
+        return (luminance.clamp(0, 1),)
