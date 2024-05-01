@@ -5,8 +5,10 @@ from .colors import SplitRGB
 from .colors import MergeRGB
 from .colors import ColorBalance
 from .colors import ColorBalanceAdvanced
+from .contrast import Levels
 
 NODE_CLASS_MAPPINGS = {
+    "Levels": Levels,
     "BlendModes": BlendModes,
     "SelectiveColor": SelectiveColor,
     "BlendIf": BlendIf,
@@ -17,6 +19,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "Levels": "Levels",
     "BlendModes": "Blend Modes",
     "SelectiveColor": "Selective Color",
     "BlendIf": "Blend If",
