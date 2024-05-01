@@ -70,6 +70,8 @@ class Levels:
             input_black_point (float): Black point value (lower bound of input range).
             input_white_point (float): White point value (upper bound of input range).
             input_gamma (float): Gamma value (controls contrast).
+            output_black_point (float): New black point value (lower bound of output range).
+            output_white_point (float): New white point value (upper bound of output range).
 
         Returns:
             torch.Tensor: Output tensor with the adjusted pixel values.
@@ -84,10 +86,17 @@ class Levels:
         adjusted_color = ((color_channels - input_black_point) / (input_white_point - input_black_point)) ** input_gamma
         adjusted_color = torch.clamp(adjusted_color, 0.0, 1.0)
 
-        # If there is an alpha channel, combine the adjusted color channels with the original alpha channel
+        # Linearly remap the adjusted pixel values to the specified output range
+        remapped_color = output_black_point + (adjusted_color * (output_white_point - output_black_point))
+
+        # If there is an alpha channel, combine the remapped color channels with the original alpha channel
         if has_alpha:
             alpha_channel = image[..., -1:]
-            adjusted_image = torch.cat([adjusted_color, alpha_channel], dim=-1)
+            adjusted_image = torch.cat([remapped_color, alpha_channel], dim=-1)
         else:
-            adjusted_image = adjusted_color
+            adjusted_image = remapped_color
+
+
+
+        # MUST BE A TUPLE!
         return (adjusted_image, )
