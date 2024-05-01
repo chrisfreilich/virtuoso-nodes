@@ -9,7 +9,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-advanced-node): Color balance of a targeted brightness range.
 6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
 7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
-8. [**Levels**](): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
+8. [**Levels**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#levels): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 <br><br>
