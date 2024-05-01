@@ -9,6 +9,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-advanced-node): Color balance of a targeted brightness range.
 6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
 7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
+8. [**Levels**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#levels): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 <br><br>
@@ -125,6 +126,26 @@ These nodes split apart images into their component color channels and merge the
 
 - **image**: The image to split on the Split RGB node, and the merged image on the Merge RGB node
 - **red, green, blue**: The separate images holding the red, green, and blue channels of the image. Note that there is nothing stopping you from using any images you want here on the Merge RGB node-- the node will only take the indicated color channel from each image.
+
+ <br>
+
+ ## Levels 
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/1e94949f-8e97-4e35-81b2-3f110bce9ea5)
+
+This node works just like Photoshop's Levels, without the fancy controls. Move around your black and white points and your gamma, across all channels, or select just one color channel.
+
+### Node controls:
+
+- **image**: The image to set the levels for.
+- **channel**: Choose 'RGB' to work on the whole image, or a color to set levels only on that color channel.
+- **input_black_point**: Choose what brightness level becomes black. 0 is black, 1 is white.
+- **input_gamma**: Adjust the gamma.
+- **input_white_point**: Choose what brightness level becomes white. 0 is black, 1 is white.
+- **output_black_point**: After input calculations are complete, what brightness will black pixels be output at.
+- **output_white_point**: After input calculations are complete, what brightness will white pixels be output at.
+
+  <br>
   
 # Installation:
 
