@@ -373,3 +373,123 @@ class BlackAndWhite():
 
         # Clip luminance values to be between 0 and 1
         return (luminance.clamp(0, 1),)
+    
+
+
+import torch.nn.functional as F
+import colorsys
+
+class HueSat():
+    NAME = "Hue/Saturation"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_hue_sat"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "hue_low": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_low_feather": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 180,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_high": ("FLOAT", {
+                    "default": 360,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_high_feather": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 180,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -180.0,
+                    "max": 180.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "sat_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100,
+                    "max": 100,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "lightness_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100.0,
+                    "max": 100.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+            }
+        }
+
+    def do_hue_sat(self, image, hue_low, hue_low_feather,hue_high, hue_high_feather, hue_offset, sat_offset, lightness_offset):
+       
+        # Convert image to HSV
+        image_hsv = torch.zeros_like(image)
+        for i in range(image.shape[0]):
+            for j in range(image.shape[1]):
+                for k in range(image.shape[2]):
+                    r, g, b = image[i, j, k, 0:3]
+                    h, s, v = colorsys.rgb_to_hsv(r.item(), g.item(), b.item())
+                    image_hsv[i, j, k, 0] = h * 360
+                    image_hsv[i, j, k, 1] = s
+                    image_hsv[i, j, k, 2] = v
+                    if image.shape[3] == 4:
+                        image_hsv[i, j, k, 3] = image[i, j, k, 3]
+
+        # Calculate the range of hues that will be affected by the adjustment to be made
+        hue_low_wrap = (hue_low - hue_low_feather) % 360
+        hue_high_wrap = (hue_high + hue_high_feather) % 360
+        
+        if hue_low < hue_high:
+            mask = (image_hsv[:, :, :, 0] >= hue_low_wrap) & (image_hsv[:, :, :, 0] <= hue_high_wrap)
+        else:
+            mask = (image_hsv[:, :, :, 0] >= hue_low_wrap) | (image_hsv[:, :, :, 0] <= hue_high_wrap)
+        
+        # Shift hues
+        image_hsv[:, :, :, 0] = (image_hsv[:, :, :, 0] + hue_offset) % 360
+        
+        # Change saturation values
+        image_hsv[:, :, :, 1] = torch.clamp(image_hsv[:, :, :, 1] + sat_offset / 100, 0, 1)
+        
+        # Change lightness values
+        if lightness_offset < 0:
+            image_hsv[:, :, :, 2] = torch.clamp(image_hsv[:, :, :, 2] + lightness_offset / 100, 0, 1)
+        else:
+            image_hsv[:, :, :, 2] = torch.clamp(image_hsv[:, :, :, 2] + lightness_offset / 100 * (1 - image_hsv[:, :, :, 2]), 0, 1)
+        
+        # Apply mask
+        image_hsv[~mask] = image[~mask]
+        
+        # Convert image back to RGB
+        image_rgb = torch.zeros_like(image)
+        for i in range(image.shape[0]):
+            for j in range(image.shape[1]):
+                for k in range(image.shape[2]):
+                    h, s, v = image_hsv[i, j, k, 0:3].tolist()
+                    r, g, b = colorsys.hsv_to_rgb(h / 360, s, v)
+                    image_rgb[i, j, k, 0:3] = torch.tensor([r, g, b])
+                    if image.shape[3] == 4:
+                        image_rgb[i, j, k, 3] = image_hsv[i, j, k, 3]
+
+        return (image_rgb,)
