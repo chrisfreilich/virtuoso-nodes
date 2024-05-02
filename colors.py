@@ -561,7 +561,11 @@ def create_mask(hue, saturation, hue_low, hue_high, hue_low_feather, hue_high_fe
     # Calculate the mask
     mask_low = linearstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue, increasing=True)
     mask_high = linearstep(hue_high_norm, hue_high_norm + hue_high_feather_norm, hue, increasing=False)
-    mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
+    
+    if hue_low_norm < hue_high_norm:
+        mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
+    else:
+        mask_middle = torch.where((hue <= hue_low_norm) & (hue >= hue_high_norm), torch.tensor(0.0), torch.tensor(1.0))
 
     # Calculate the final mask by taking the maximum value among the three masks
     mask = torch.max(torch.max(mask_low, mask_middle), mask_high)
