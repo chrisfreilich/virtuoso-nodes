@@ -6,6 +6,7 @@
 SplitRGB and MergeRGB nodes, Hue/Saturation, and Black and White node.
 """
 import torch
+from torchvision.utils import save_image
 from scipy.interpolate import CubicSpline
 
 class SolidColor():
@@ -373,6 +374,8 @@ class BlackAndWhite():
 
         # Clip luminance values to be between 0 and 1
         return (luminance.clamp(0, 1),)
+    
+
 
 
 class HueSat():
@@ -559,21 +562,43 @@ def create_mask(hue, hue_low, hue_high, hue_low_feather, hue_high_feather):
     # Calculate the mask
     if hue_low_norm < hue_high_norm:
         mask_low = smoothstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
-        mask_high = smoothstep(hue_high_norm + hue_high_feather_norm, hue_high_norm, hue)
-        mask = torch.clamp(mask_low + mask_high, 0.0, 1.0)
+        mask_high = smoothstep(hue_high_norm, hue_high_norm + hue_high_feather_norm, hue)
+        mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
     else:
-        mask_low = smoothstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
-        mask_high = smoothstep(hue_high_norm + hue_high_feather_norm, hue_high_norm, hue)
-        mask = torch.clamp(mask_low + (1 - mask_high), 0.0, 1.0)
+        mask_low = smoothstep(hue_low_norm, hue_low_norm + hue_low_feather_norm, hue)
+        mask_high = smoothstep(hue_high_norm - hue_high_feather_norm, hue_high_norm, hue)
+        mask_middle = torch.where((hue >= hue_low_norm) | (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
 
-    # Invert the mask
-    #mask = 1 - mask
+    # Calculate the final mask by taking the maximum value among the three masks
+    mask = torch.max(torch.max(mask_low, mask_middle), mask_high)
 
     return mask
 
+def save_hsv_components(image_hsv):
+    save_image(image_hsv[..., 0].unsqueeze(0), 'C:/Users/chris/Desktop/hue.png')
+    save_image(image_hsv[..., 1].unsqueeze(0), 'C:/Users/chris/Desktop/saturation.png')
+    save_image(image_hsv[..., 2].unsqueeze(0), 'C:/Users/chris/Desktop/lightness.png')
+
+def count_total_unique_values(tensor1, tensor2, tensor3):
+    combined_tensor = torch.cat((tensor1.flatten(), tensor2.flatten(), tensor3.flatten()))
+    unique_values = torch.unique(combined_tensor)
+    print(f"The total number of unique values among the three tensors is {len(unique_values)}")
+
+def count_unique_values(tensor):
+    unique_values = torch.unique(tensor)
+    print(f"The total number of unique values is {len(unique_values)}")
+
+def count_out_of_range_values(tensor):
+    unique_values = torch.unique(tensor)
+    out_of_range_values = unique_values[(unique_values < 0) | (unique_values > 1)]
+    print(f"The total number of unique values not in the range [0, 1] is {len(out_of_range_values)}")
+    print(out_of_range_values)
+
 def smoothstep(edge0, edge1, x):
     # Scale, bias and saturate x to 0..1 range
-    x = torch.clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0) 
+    x = (x - edge0) / (edge1 - edge0)
+    # Return 0 for values outside the range [0, 1]
+    x = torch.where((x < 0) | (x > 1), torch.tensor(0.0), x)
     # Evaluate polynomial
     return x * x * (3 - 2 * x)
 
