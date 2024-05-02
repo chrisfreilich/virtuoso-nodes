@@ -559,26 +559,15 @@ def create_mask(hue, saturation, hue_low, hue_high, hue_low_feather, hue_high_fe
     hue_high_feather_norm = hue_high_feather / 360.0
 
     # Calculate the mask
-    if hue_low_norm < hue_high_norm:
-        mask_low = linearstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
-        mask_high = linearstep(hue_high_norm, hue_high_norm + hue_high_feather_norm, hue)
-        mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
-    else:
-        mask_low = linearstep(hue_low_norm, hue_low_norm + hue_low_feather_norm, hue)
-        mask_high = linearstep(hue_high_norm - hue_high_feather_norm, hue_high_norm, hue)
-        mask_middle = torch.where((hue >= hue_low_norm) | (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
+    mask_low = linearstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue, increasing=True)
+    mask_high = linearstep(hue_high_norm, hue_high_norm + hue_high_feather_norm, hue, increasing=False)
+    mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
 
     # Calculate the final mask by taking the maximum value among the three masks
     mask = torch.max(torch.max(mask_low, mask_middle), mask_high)
 
     # Only select pixels with a saturation greater than 0
     mask = torch.where(saturation > 0, mask, torch.tensor(0.0))
-
-    # Save the tensors as grayscale PNG images
-    save_image(mask_low.unsqueeze(0), 'C:/Users/chris/Desktop/mask_low.png')
-    save_image(mask_high.unsqueeze(0), 'C:/Users/chris/Desktop/mask_high.png')
-    save_image(mask_middle.unsqueeze(0), 'C:/Users/chris/Desktop/mask_middle.png')
-    save_image(mask.unsqueeze(0), 'C:/Users/chris/Desktop/mask.png')
 
     return mask
 
@@ -602,28 +591,13 @@ def count_out_of_range_values(tensor):
     print(f"The total number of unique values not in the range [0, 1] is {len(out_of_range_values)}")
     print(out_of_range_values)
 
-def linearstep(edge0, edge1, x):
-    # Return 0 for values outside the range [edge0, edge1]
-    x = torch.where((x < edge0) | (x > edge1), torch.tensor(0.0), x)
-    # Scale x to 0..1 range
-    x = (x - edge0) / (edge1 - edge0)
-    return x
-
-def smoothstep(edge0, edge1, x):
-    # Scale, bias and saturate x to 0..1 range
-    x = (x - edge0) / (edge1 - edge0)
-    # Return 0 for values outside the range [0, 1]
-    x = torch.where((x < 0) | (x > 1), torch.tensor(0.0), x)
-    # Evaluate polynomial
-    return x * x * (3 - 2 * x)
-
-def smootherstep(edge0, edge1, x):
-    # Scale, and clamp x to 0..1 range
-    x = torch.clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0)
-    # Return 0 for values outside the range [0, 1]
-    x = torch.where((x < 0) | (x > 1), torch.tensor(0.0), x)
-    # Evaluate quintic polynomial
-    return x * x * x * (x * (x * 6 - 15) + 10)
+def linearstep(low_edge, high_edge, x, increasing=True):
+    # Create a mask where values within the range are set to abs( (hue value - low_edge)/(high_edge - low_edge))
+    gradient = torch.abs((x - low_edge) / (high_edge - low_edge))
+    if not increasing:
+        gradient = 1 - gradient
+    # Return the mask where values within the range are set to the gradient, and 0 otherwise
+    return torch.where((x >= low_edge) & (x <= high_edge), gradient, torch.tensor(0.0))
 
 def adjust_saturation(saturation, sat_offset):
     # Calculate the change in saturation
