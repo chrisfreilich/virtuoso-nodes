@@ -444,19 +444,21 @@ class HueSat():
         # Convert image to HSV
         image_hsv = rgb_to_hsv(image)
 
-        # Calculate the mask
-        mask = create_mask(image_hsv[..., 0], hue_low, hue_high, hue_low_feather, hue_high_feather)
-     
-        # Adjust HSL values
-        image_hsv[..., 0] = (image_hsv[..., 0] + hue_offset) % 360
-        image_hsv[..., 1] = torch.clamp(image_hsv[..., 1] + sat_offset / 100, 0, 1)
-        lightness_adjust = lightness_offset / 100 * (-1 if lightness_offset < 0 else (1 - image_hsv[..., 2]))
+        # Adjust hue
+        image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
+
+        # Adjust saturation
+        image_hsv[..., 1] = adjust_saturation(image_hsv[..., 1], sat_offset)
+
+        # Adjust lightness
+        lightness_adjust = lightness_offset / 100.0 * (-1 if lightness_offset < 0 else (1 - image_hsv[..., 2]))
         image_hsv[..., 2] = torch.clamp(image_hsv[..., 2] + lightness_adjust, 0, 1)
 
         # Convert back to RGB
         adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
 
         # Blend the original and adjusted images based on the mask
+        mask = create_mask(image_hsv[..., 0], hue_low, hue_low_feather, hue_high, hue_high_feather)
         blended_rgb = (adjusted_image_rgb * mask.unsqueeze(-1)) + (image[..., :3] * (1 - mask.unsqueeze(-1)))
 
         # Include the alpha channel if present
@@ -550,22 +552,21 @@ def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
     return rgb_tensor
 
 def create_mask(hue, hue_low, hue_high, hue_low_feather, hue_high_feather):
-    hue_low = hue_low / 360.0
-    hue_high = hue_high / 360.0
-    hue_low_feather = hue_low_feather / 360.0
-    hue_high_feather = hue_high_feather / 360.0
+    # Normalize the values to the range [0, 1]
+    hue_low_norm = hue_low / 360.0
+    hue_high_norm = hue_high / 360.0
+    hue_low_feather_norm = hue_low_feather / 360.0
+    hue_high_feather_norm = hue_high_feather / 360.0
 
-    # Wrap hue values
-    hue = hue % 1.0
-    hue_low = hue_low % 1.0
-    hue_high = hue_high % 1.0
-
-    # Calculate mask
-    if hue_low < hue_high:
-        mask = smoothstep(hue_low - hue_low_feather, hue_low, hue) * smoothstep(hue_high + hue_high_feather, hue_high, hue)
+    # Calculate the mask
+    if hue_low_norm < hue_high_norm:
+        mask_low = smoothstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
+        mask_high = smoothstep(hue_high_norm + hue_high_feather_norm, hue_high_norm, hue)
+        mask = torch.clamp(mask_low + mask_high, 0.0, 1.0)
     else:
-        mask = smoothstep(hue_low - hue_low_feather, hue_low, hue) + smoothstep(hue_high + hue_high_feather, hue_high, hue)
-        mask = torch.clamp(mask, 0.0, 1.0)
+        mask_low = smoothstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
+        mask_high = smoothstep(hue_high_norm + hue_high_feather_norm, hue_high_norm, hue)
+        mask = torch.clamp(mask_low + (1 - mask_high), 0.0, 1.0)
 
     return mask
 
@@ -574,3 +575,20 @@ def smoothstep(edge0, edge1, x):
     x = torch.clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0) 
     # Evaluate polynomial
     return x * x * (3 - 2 * x)
+
+def adjust_saturation(saturation, sat_offset):
+    # Calculate the change in saturation
+    if sat_offset < 0:
+        delta_saturation = (sat_offset / 100.0) * saturation
+    else:
+        delta_saturation = (sat_offset / 100.0) * (1 - saturation)
+    # Apply the change to the saturation channel
+    new_saturation = torch.clamp(saturation + delta_saturation, 0, 1)
+    return new_saturation
+
+def adjust_hue(hue, hue_offset):
+    # Normalize hue_offset to the range [0, 1]
+    hue_offset_normalized = hue_offset / 360.0
+    # Apply the normalized hue_offset and ensure the result is within [0, 1]
+    new_hue = (hue + hue_offset_normalized) % 1.0
+    return new_hue
