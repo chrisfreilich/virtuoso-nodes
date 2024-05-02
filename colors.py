@@ -373,8 +373,6 @@ class BlackAndWhite():
 
         # Clip luminance values to be between 0 and 1
         return (luminance.clamp(0, 1),)
-    
-
 
 
 class HueSat():
@@ -441,8 +439,10 @@ class HueSat():
         }
 
     def do_hue_sat(self, image, hue_low, hue_low_feather, hue_high, hue_high_feather, hue_offset, sat_offset, lightness_offset):
-        # Convert image to HSV
+        
+        # Convert image to HSV and build mask
         image_hsv = rgb_to_hsv(image)
+        mask = create_mask(image_hsv[..., 0], hue_low, hue_high, hue_low_feather, hue_high_feather)
 
         # Adjust hue
         image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
@@ -457,7 +457,6 @@ class HueSat():
         adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
 
         # Blend the original and adjusted images based on the mask
-        mask = create_mask(image_hsv[..., 0], hue_low, hue_low_feather, hue_high, hue_high_feather)
         blended_rgb = (adjusted_image_rgb * mask.unsqueeze(-1)) + (image[..., :3] * (1 - mask.unsqueeze(-1)))
 
         # Include the alpha channel if present
@@ -566,6 +565,9 @@ def create_mask(hue, hue_low, hue_high, hue_low_feather, hue_high_feather):
         mask_low = smoothstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue)
         mask_high = smoothstep(hue_high_norm + hue_high_feather_norm, hue_high_norm, hue)
         mask = torch.clamp(mask_low + (1 - mask_high), 0.0, 1.0)
+
+    # Invert the mask
+    #mask = 1 - mask
 
     return mask
 
