@@ -603,6 +603,7 @@ def linearstep(low_edge, high_edge, x, increasing=True):
     # Return the mask where values within the range are set to the gradient, and 0 otherwise
     return torch.where((x >= low_edge) & (x <= high_edge), gradient, torch.tensor(0.0))
 
+
 def adjust_saturation(saturation, sat_offset):
     # Calculate the change in saturation
     if sat_offset < 0:
