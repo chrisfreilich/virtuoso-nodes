@@ -451,8 +451,7 @@ class HueSat():
         image_hsv[..., 1] = adjust_saturation(image_hsv[..., 1], sat_offset)
 
         # Adjust lightness
-        lightness_adjust = lightness_offset / 100.0 * (-1 if lightness_offset < 0 else (1 - image_hsv[..., 2]))
-        image_hsv[..., 2] = torch.clamp(image_hsv[..., 2] + lightness_adjust, 0, 1)
+        image_hsv = adjust_lightness(image_hsv, lightness_offset)
 
         # Convert back to RGB
         adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
@@ -592,3 +591,18 @@ def adjust_hue(hue, hue_offset):
     # Apply the normalized hue_offset and ensure the result is within [0, 1]
     new_hue = (hue + hue_offset_normalized) % 1.0
     return new_hue
+
+def adjust_lightness(image_hsv, lightness_offset):
+    # Map lightness_offset to [-1, 1]
+    offset = lightness_offset / 100.0
+
+    # If lightness_offset < 0, interpolate between the image and a black image
+    if lightness_offset < 0:
+        image_hsv[..., 2] = image_hsv[..., 2] * (1 + offset)
+    # If lightness_offset > 0, interpolate between the image and a white image
+    elif lightness_offset > 0:
+        image_hsv[..., 2] = image_hsv[..., 2] * (1 - offset) + offset
+        # Also reduce the saturation as the lightness increases
+        image_hsv[..., 1] = image_hsv[..., 1] * ((1 - offset) ** 0.45)
+
+    return image_hsv
