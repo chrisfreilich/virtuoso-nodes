@@ -418,22 +418,22 @@ class HueSatAdvanced():
                     "default": 0,
                     "min": -180.0,
                     "max": 180.0,
-                    "step": 1,
-                    "round": 0.1, 
+                    "step": 0.1,
+                    "round": 0.01, 
                     "display": "number"}),
                 "sat_offset": ("FLOAT", {
                     "default": 0,
                     "min": -100,
                     "max": 100,
-                    "step": 1,
-                    "round": 0.1, 
+                    "step": 0.1,
+                    "round": 0.01, 
                     "display": "number"}),
                 "lightness_offset": ("FLOAT", {
                     "default": 0,
                     "min": -100.0,
                     "max": 100.0,
-                    "step": 1,
-                    "round": 0.1, 
+                    "step": 0.1,
+                    "round": 0.01, 
                     "display": "number"}),
             }
         }
@@ -443,6 +443,85 @@ class HueSatAdvanced():
         # Convert image to HSV and build mask
         image_hsv = rgb_to_hsv(image)
         mask = create_mask(image_hsv[..., 0], image_hsv[..., 1], hue_low, hue_high, hue_low_feather, hue_high_feather)
+        # Adjust hue
+        image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
+
+        # Adjust saturation
+        image_hsv[..., 1] = adjust_saturation(image_hsv[..., 1], sat_offset)
+
+        # Adjust lightness
+        image_hsv = adjust_lightness(image_hsv, lightness_offset)
+
+        # Convert back to RGB
+        adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
+
+        # Blend the original and adjusted images based on the mask
+        blended_rgb = (adjusted_image_rgb * mask.unsqueeze(-1)) + (image[..., :3] * (1 - mask.unsqueeze(-1)))
+
+        # Include the alpha channel if present
+        if image.shape[-1] == 4:
+            blended_rgba = torch.cat((blended_rgb, image[..., 3:4]), dim=-1)
+        else:
+            blended_rgba = blended_rgb
+
+        return (blended_rgba, mask)
+
+
+class HueSat():
+    NAME = "Hue/Saturation"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "do_hue_sat"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "hue": (["red", "yellow", "green", "cyan", "blue", "magenta"],),
+                "hue_width": (["normal","narrow", "wide"],),
+                "feather": (["normal", "none", "wide"],),
+                "hue_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -180.0,
+                    "max": 180.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "sat_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100,
+                    "max": 100,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "lightness_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100.0,
+                    "max": 100.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+            }
+        }
+
+    def do_hue_sat(self, image, hue, hue_width, feather, hue_offset, sat_offset, lightness_offset):
+        
+        # Convert image to HSV 
+        image_hsv = rgb_to_hsv(image)
+
+        # Calculate ranges from parameters
+        hues = {"red": 0, "yellow": 60, "green": 120, "cyan": 180, "blue": 240, "magenta": 300}
+        widths = {"narrow": 15, "normal": 30, "wide": 60}
+        feathers = {"none": 0, "normal": 25, "wide": 50}
+        base_hue = hues[hue]
+        hue_low = base_hue - (widths[hue_width]/2)
+        if hue_low < 0:
+            hue_low = 360 - hue_low
+        hue_high = base_hue + (widths[hue_width]/2)
+
+        mask = create_mask(image_hsv[..., 0], image_hsv[..., 1], hue_low, hue_high, feathers[feather]/2, feathers[feather]/2)
+        
         # Adjust hue
         image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
 
