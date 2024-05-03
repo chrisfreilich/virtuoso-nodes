@@ -596,13 +596,21 @@ def count_out_of_range_values(tensor):
     print(out_of_range_values)
 
 def linearstep(low_edge, high_edge, x, increasing=True):
-    # Create a mask where values within the range are set to abs( (hue value - low_edge)/(high_edge - low_edge))
-    gradient = torch.abs((x - low_edge) / (high_edge - low_edge))
-    if not increasing:
-        gradient = 1 - gradient
-    # Return the mask where values within the range are set to the gradient, and 0 otherwise
-    return torch.where((x >= low_edge) & (x <= high_edge), gradient, torch.tensor(0.0))
+    # Handle the case where the gradient overflows past 0
+    if low_edge < 0:
+        # Define gradient function for low gradient
+        overflow_mask_low = torch.where((x >= 0) & (x <= high_edge), (x - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
+        overflow_mask_high = torch.where((x >= (1 + low_edge)) & (x <= 1), (x - 1 - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
+        mask = torch.max(overflow_mask_low, overflow_mask_high)
+    else:
+        # Create a mask where values within the range are set to abs( (hue value - low_edge)/(high_edge - low_edge))
+        gradient = torch.abs((x - low_edge) / (high_edge - low_edge))
+        if not increasing:
+            gradient = 1 - gradient
+        # Return the mask where values within the range are set to the gradient, and 0 otherwise
+        mask = torch.where((x >= low_edge) & (x <= high_edge), gradient, torch.tensor(0.0))
 
+    return mask
 
 def adjust_saturation(saturation, sat_offset):
     # Calculate the change in saturation
