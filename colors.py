@@ -3,12 +3,14 @@
 @title: Virtuoso Pack - Color Nodes
 @nickname: Virtuoso Pack - Color Nodes
 @description: This extension provides a solid color node, Color Balance Node, Color Balance Advanced Node,
-SplitRGB and MergeRGB nodes, Hue/Saturation, and Black and White node.
+SplitRGB and MergeRGB nodes, Hue/Saturation, Hue/Saturation Advanced, 
+SolidColorRGB, SolidColorHSV, and Black and White nodes.
 """
 import torch
 from scipy.interpolate import CubicSpline
+import colorsys
 
-class SolidColor():
+class SolidColorRGB():
     NAME = "Solid Color"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE",)
@@ -18,27 +20,58 @@ class SolidColor():
     @classmethod
     def INPUT_TYPES(s) -> dict:
         return {
-        "required": {},
-        "optional": {
-            "RGB": ("VEC3", {"default": (128, 128, 128), "step": 1,
-                                      "label": ["Red", "Green", "Blue"],
-                                      "rgb": True, "tooltip": "Color to Output"}),
-            "size": ("VEC2", {"default": (512, 512), "step": 1,
-                                  "label": ["width", "height"],
-                                  "tooltip": "dimensions of the solid color image"})
-        }}
+            "required": {
+                "red": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "green": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "blue": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            },
+            "optional":{
+                "hex": ("STRING", {
+                    "default": ""
+                }),
+            }
+        }
 
-    def get_solid_color(self, **kw):
-        # Extract the color and dimension from the keyword arguments
-        color = torch.tensor([kw['RGB']['0'], kw['RGB']['1'], kw['RGB']['2']], dtype=torch.float32) / 255  # Normalize to 0-1
-        dimension = torch.tensor([kw['size']['0'], kw['size']['1']], dtype=torch.int)
+    def get_solid_color(self, red, green, blue, height, width, hex=""):
 
-        # Create a 4D image tensor filled with the specified color
-        image = torch.ones((1, dimension[1], dimension[0], 4), dtype=torch.float32)
+        validated_hex = validate_hex_code(hex)
 
-        # Assign the RGB channels
-        image[:, :, :, :3] = color.view(1, 1, 1, 3)
-        return (image, )
+        if validated_hex == "":
+            return (create_solid_rgb(red, green, blue, height, width), )
+        else:
+            return (create_solid_hex(validated_hex, height, width), )
     
 class SplitRGB():
     
@@ -545,6 +578,29 @@ class HueSat():
 
         return (blended_rgba, mask)
 
+## Support functions
+def create_solid_rgb(r, g, b, h, w):
+    return torch.zeros(1, h, w, 3) + torch.tensor([r/255.0, g/255.0, b/255.0])
+
+def create_solid_hsv(h, s, v, h_img, w_img):
+    r, g, b = colorsys.hsv_to_rgb(h/360.0, s/100.0, v/100.0)
+    return torch.zeros(1, h_img, w_img, 3) + torch.tensor([b, g, r])
+
+def create_solid_hex(hex, h, w):
+    if hex[0] == '#':
+        hex = hex[1:]
+    r, g, b = tuple(int(hex[i:i+2], 16)/255.0 for i in (0, 2, 4))
+    return torch.zeros(1, h, w, 3) + torch.tensor([r, g, b])
+
+def validate_hex_code(hex_code):
+    hex_code = hex_code.lstrip('#')
+    
+    if len(hex_code) == 3 and all(c in '0123456789ABCDEFabcdef' for c in hex_code):
+        return ''.join([c*2 for c in hex_code]).upper()
+    elif len(hex_code) == 6 and all(c in '0123456789ABCDEFabcdef' for c in hex_code):
+        return hex_code.upper()
+    else:
+        return ""
 
 # Thanks to MA Lee for conversion code    
 def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:

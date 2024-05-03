@@ -2,13 +2,11 @@ from .blendmodes import BlendModes
 from .selectivecolor import SelectiveColor
 from .contrast import Levels
 from .blendif import BlendIf
-from .colors import SplitRGB
-from .colors import MergeRGB
-from .colors import ColorBalance
-from .colors import ColorBalanceAdvanced
+from .colors import SplitRGB, MergeRGB
+from .colors import ColorBalance, ColorBalanceAdvanced
 from .colors import BlackAndWhite
-from .colors import HueSatAdvanced
-from .colors import HueSat
+from .colors import HueSatAdvanced, HueSat
+from .colors import SolidColorRGB
 
 NODE_CLASS_MAPPINGS = {
     "Levels": Levels,
@@ -21,7 +19,8 @@ NODE_CLASS_MAPPINGS = {
     "MergeRGB": MergeRGB,
     "BlackAndWhite": BlackAndWhite,
     "HueSat": HueSat,
-    "HueSatAdvanced": HueSatAdvanced
+    "HueSatAdvanced": HueSatAdvanced,
+    "SolidColorRGB": SolidColorRGB
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -35,7 +34,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MergeRGB": "Merge RGB",
     "BlackAndWhite": "Black and White",
     "HueSat": "Hue/Saturation",
-    "HueSatAdvanced": "Hue/Saturation Advanced"
+    "HueSatAdvanced": "Hue/Saturation Advanced",
+    "SolidColorRGB": "Solid Color RGB"
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
