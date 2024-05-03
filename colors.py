@@ -11,7 +11,7 @@ from scipy.interpolate import CubicSpline
 import colorsys
 
 class SolidColorRGB():
-    NAME = "Solid Color"
+    NAME = "Solid Color RGB"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ('solid color image',)
@@ -74,7 +74,7 @@ class SolidColorRGB():
             return (create_solid_hex(validated_hex, height, width), )
 
 class SolidColorHSV():
-    NAME = "Solid Color"
+    NAME = "Solid Color HSV"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ('solid color image',)
@@ -125,6 +125,58 @@ class SolidColorHSV():
     def get_solid_color(self, hue, saturation, value, height, width):
             return (create_solid_hsv(hue, saturation, value, height, width), )
 
+class SolidColor():
+    NAME = "Solid Color"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ('solid color image',)
+    FUNCTION = "get_solid_color"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "color": (["black", "silver", "gray", "white","maroon","red",	
+                           "purple", "fuchsia",	"green", "lime", "olive",
+                           "yellow", "navy", "blue", "teal", "aqua"],),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            }
+        }
+
+    def get_solid_color(self, color, height, width):
+            
+        colors = {"black":	    "#000000", 	
+                  "silver":	    "#c0c0c0",	
+                  "gray":	    "#808080",	
+                  "white":	    "#ffffff",	
+                  "maroon":	    "#800000",	
+                  "red":	    "#ff0000",	
+                  "purple":	    "#800080",	
+                  "fuchsia":	"#ff00ff",	
+                  "green":	    "#008000",	
+                  "lime":	    "#00ff00",	
+                  "olive":	    "#808000",	
+                  "yellow":	    "#ffff00",	
+                  "navy":	    "#000080",	
+                  "blue":	    "#0000ff",	
+                  "teal":	    "#008080",	
+                  "aqua":	    "#00ffff",
+                }
+
+        return (create_solid_hex(colors[color], height, width), )
 
 class SplitRGB():
     

@@ -6,7 +6,7 @@ from .colors import SplitRGB, MergeRGB
 from .colors import ColorBalance, ColorBalanceAdvanced
 from .colors import BlackAndWhite
 from .colors import HueSatAdvanced, HueSat
-from .colors import SolidColorRGB, SolidColorHSV
+from .colors import SolidColorRGB, SolidColorHSV, SolidColor
 
 NODE_CLASS_MAPPINGS = {
     "BlackAndWhite": BlackAndWhite,
@@ -20,6 +20,7 @@ NODE_CLASS_MAPPINGS = {
     "MergeRGB": MergeRGB,
     "SplitRGB": SplitRGB,
     "SelectiveColor": SelectiveColor,
+    "SolidColor": SolidColor,
     "SolidColorRGB": SolidColorRGB,
     "SolidColorHSV": SolidColorHSV
 }
@@ -36,6 +37,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "MergeRGB": "Merge RGB",
     "SplitRGB": "Split RGB",
     "SelectiveColor": "Selective Color",
+    "SolidColor": "Solid Color",
     "SolidColorRGB": "Solid Color RGB",
     "SolidColorHSV": "Solid Color HSV"
 }
