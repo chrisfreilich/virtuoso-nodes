@@ -153,7 +153,21 @@ This node works just like Photoshop's Levels, without the fancy controls. Move a
 
   <br>
   
-# Installation:
+## Black and White 
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/847120dd-6b24-4255-b7f7-070cf9482b2d)
+
+This node works just like Photoshop's Black and White adjustment layer. Add or remove brightness based on each of the color ranges in the image.
+
+### Node controls:
+
+- **image**: The image to set the levels for.
+- **red, green, blue, cyan, magenta, yellow**: Reduce these values to make the given color range darker, increase the values to make the given color range brighter.
+
+  <br>
+  
+
+  # Installation:
 
 1. Git clone this repo into a folder in ComfyUI\custom_nodes.
 2. pip install -r requirements.txt.
