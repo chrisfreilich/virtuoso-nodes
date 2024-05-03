@@ -72,7 +72,60 @@ class SolidColorRGB():
             return (create_solid_rgb(red, green, blue, height, width), )
         else:
             return (create_solid_hex(validated_hex, height, width), )
-    
+
+class SolidColorHSV():
+    NAME = "Solid Color"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ('solid color image',)
+    FUNCTION = "get_solid_color"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "hue": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "saturation": ("FLOAT", {
+                    "default": 50,
+                    "min": 0,
+                    "max": 100.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "value": ("FLOAT", {
+                    "default": 100,
+                    "min": 0,
+                    "max": 100.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            }
+        }
+
+    def get_solid_color(self, hue, saturation, value, height, width):
+            return (create_solid_hsv(hue, saturation, value, height, width), )
+
+
 class SplitRGB():
     
     def __init__(self):
@@ -584,7 +637,7 @@ def create_solid_rgb(r, g, b, h, w):
 
 def create_solid_hsv(h, s, v, h_img, w_img):
     r, g, b = colorsys.hsv_to_rgb(h/360.0, s/100.0, v/100.0)
-    return torch.zeros(1, h_img, w_img, 3) + torch.tensor([b, g, r])
+    return torch.zeros(1, h_img, w_img, 3) + torch.tensor([r, g, b])
 
 def create_solid_hex(hex, h, w):
     if hex[0] == '#':
