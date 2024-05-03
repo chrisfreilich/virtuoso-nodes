@@ -254,6 +254,32 @@ This node creatse a solid color image by setting the Red, Green, and Blue values
 <br>
 
 
+## Solid Color HSV
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0d983e1f-9ae8-43fb-bd67-d78a322207e2)
+
+This node creatse a solid color image by setting the hue, saturation, and value of the color. To use this node well, you need to be aware of where the colors are placed on the color wheel. The measurements are in degrees:
+
+- **Red**: 0 degrees (and 360 degrees)
+- **Yellow**: 60 degrees
+- **Green**: 120 degrees
+- **Cyan**: 180 degrees
+- **Blue**: 240 degrees
+- **Magenta**: 300 degrees
+
+Note that any color with the value set to 0 will be black, but not every color with the value set to 100 will be white. If you want white, use value = 100 and saturation = 0.
+
+### Node input controls:
+
+- **hue**: The degree value of the hue you want.
+- **saturation**: The percent of color saturation you want for the color.
+- **value**: The brightness of the color, in percentage from 0-100.
+- **height**: Pixel height of new solid color image.
+- **width**: Pixel width of new solid color image.
+
+<br>
+
+
 # Installation:
 
 1. Git clone this repo into a folder in ComfyUI\custom_nodes.
