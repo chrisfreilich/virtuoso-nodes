@@ -6,7 +6,7 @@ from .colors import MergeRGB
 from .colors import ColorBalance
 from .colors import ColorBalanceAdvanced
 from .colors import BlackAndWhite
-from .colors import HueSat
+from .colors import HueSatAdvanced
 from .contrast import Levels
 
 NODE_CLASS_MAPPINGS = {
@@ -19,7 +19,7 @@ NODE_CLASS_MAPPINGS = {
     "SplitRGB": SplitRGB,
     "MergeRGB": MergeRGB,
     "BlackAndWhite": BlackAndWhite,
-    "HueSat": HueSat
+    "HueSatAdvanced": HueSatAdvanced
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -32,7 +32,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "SplitRGB": "Split RGB",
     "MergeRGB": "Merge RGB",
     "BlackAndWhite": "Black and White",
-    "HueSat": "Hue/Saturation"
+    "HueSatAdvanced": "Hue/Saturation Advanced"
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']

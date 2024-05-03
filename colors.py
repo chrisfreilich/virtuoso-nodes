@@ -6,7 +6,6 @@
 SplitRGB and MergeRGB nodes, Hue/Saturation, and Black and White node.
 """
 import torch
-from torchvision.utils import save_image
 from scipy.interpolate import CubicSpline
 
 class SolidColor():
@@ -376,10 +375,8 @@ class BlackAndWhite():
         return (luminance.clamp(0, 1),)
     
 
-
-
-class HueSat():
-    NAME = "Hue/Saturation"
+class HueSatAdvanced():
+    NAME = "Hue/Saturation Advanced"
     CATEGORY = "Virtuoso"
     RETURN_TYPES = ("IMAGE", "MASK")
     FUNCTION = "do_hue_sat"
@@ -574,26 +571,6 @@ def create_mask(hue, saturation, hue_low, hue_high, hue_low_feather, hue_high_fe
     mask = torch.where(saturation > 0, mask, torch.tensor(0.0))
 
     return mask
-
-def save_hsv_components(image_hsv):
-    save_image(image_hsv[..., 0].unsqueeze(0), 'C:/Users/chris/Desktop/hue.png')
-    save_image(image_hsv[..., 1].unsqueeze(0), 'C:/Users/chris/Desktop/saturation.png')
-    save_image(image_hsv[..., 2].unsqueeze(0), 'C:/Users/chris/Desktop/lightness.png')
-
-def count_total_unique_values(tensor1, tensor2, tensor3):
-    combined_tensor = torch.cat((tensor1.flatten(), tensor2.flatten(), tensor3.flatten()))
-    unique_values = torch.unique(combined_tensor)
-    print(f"The total number of unique values among the three tensors is {len(unique_values)}")
-
-def count_unique_values(tensor):
-    unique_values = torch.unique(tensor)
-    print(f"The total number of unique values is {len(unique_values)}")
-
-def count_out_of_range_values(tensor):
-    unique_values = torch.unique(tensor)
-    out_of_range_values = unique_values[(unique_values < 0) | (unique_values > 1)]
-    print(f"The total number of unique values not in the range [0, 1] is {len(out_of_range_values)}")
-    print(out_of_range_values)
 
 def linearstep(low_edge, high_edge, x, increasing=True):
     # Handle the case where the gradient overflows past 0
