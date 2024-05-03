@@ -602,6 +602,10 @@ def linearstep(low_edge, high_edge, x, increasing=True):
         overflow_mask_low = torch.where((x >= 0) & (x <= high_edge), (x - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
         overflow_mask_high = torch.where((x >= (1 + low_edge)) & (x <= 1), (x - 1 - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
         mask = torch.max(overflow_mask_low, overflow_mask_high)
+    elif high_edge > 1:
+        overflow_mask_high = torch.where((x >= low_edge) & (x <= 1), 1 - ((x - low_edge) / (high_edge - low_edge)), torch.tensor(0.0))
+        overflow_mask_low = torch.where((x >= 0) & (x <= (high_edge - 1)), 1 - ((x + 1 - low_edge) / (high_edge - low_edge)), torch.tensor(0.0))
+        mask = torch.max(overflow_mask_low, overflow_mask_high)
     else:
         # Create a mask where values within the range are set to abs( (hue value - low_edge)/(high_edge - low_edge))
         gradient = torch.abs((x - low_edge) / (high_edge - low_edge))
