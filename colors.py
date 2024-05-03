@@ -1,11 +1,129 @@
 """
 @author: Chris Freilich
 @title: Virtuoso Pack - Color Nodes
-@nickname: Virtuoso Pack -Color Nodes
-@description: This extension provides a solid color node, SplitRGB and MergeRGB nodes.
+@nickname: Virtuoso Pack - Color Nodes
+@description: This extension provides a solid color node, Color Balance Node, Color Balance Advanced Node,
+SplitRGB and MergeRGB nodes, Hue/Saturation, Hue/Saturation Advanced, 
+SolidColorRGB, SolidColorHSV, and Black and White nodes.
 """
 import torch
 from scipy.interpolate import CubicSpline
+import colorsys
+
+class SolidColorRGB():
+    NAME = "Solid Color RGB"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ('solid color image',)
+    FUNCTION = "get_solid_color"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "red": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "green": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "blue": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 255.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            },
+            "optional":{
+                "hex": ("STRING", {
+                    "default": ""
+                }),
+            }
+        }
+
+    def get_solid_color(self, red, green, blue, height, width, hex=""):
+
+        validated_hex = validate_hex_code(hex)
+
+        if validated_hex == "":
+            return (create_solid_rgb(red, green, blue, height, width), )
+        else:
+            return (create_solid_hex(validated_hex, height, width), )
+
+class SolidColorHSV():
+    NAME = "Solid Color HSV"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ('solid color image',)
+    FUNCTION = "get_solid_color"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "hue": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "saturation": ("FLOAT", {
+                    "default": 50,
+                    "min": 0,
+                    "max": 100.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "value": ("FLOAT", {
+                    "default": 100,
+                    "min": 0,
+                    "max": 100.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            }
+        }
+
+    def get_solid_color(self, hue, saturation, value, height, width):
+            return (create_solid_hsv(hue, saturation, value, height, width), )
 
 class SolidColor():
     NAME = "Solid Color"
@@ -17,28 +135,49 @@ class SolidColor():
     @classmethod
     def INPUT_TYPES(s) -> dict:
         return {
-        "required": {},
-        "optional": {
-            "RGB": ("VEC3", {"default": (128, 128, 128), "step": 1,
-                                      "label": ["Red", "Green", "Blue"],
-                                      "rgb": True, "tooltip": "Color to Output"}),
-            "size": ("VEC2", {"default": (512, 512), "step": 1,
-                                  "label": ["width", "height"],
-                                  "tooltip": "dimensions of the solid color image"})
-        }}
+            "required": {
+                "color": (["black", "silver", "gray", "white","maroon","red",	
+                           "purple", "fuchsia",	"green", "lime", "olive",
+                           "yellow", "navy", "blue", "teal", "aqua"],),
+                "height": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1, 
+                    "display": "number"}),
+                "width": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 4096,
+                    "step": 64,
+                    "round": 1,  
+                    "display": "number"}),
+            }
+        }
 
-    def get_solid_color(self, **kw):
-        # Extract the color and dimension from the keyword arguments
-        color = torch.tensor([kw['RGB']['0'], kw['RGB']['1'], kw['RGB']['2']], dtype=torch.float32) / 255  # Normalize to 0-1
-        dimension = torch.tensor([kw['size']['0'], kw['size']['1']], dtype=torch.int)
+    def get_solid_color(self, color, height, width):
+            
+        colors = {"black":	    "#000000", 	
+                  "silver":	    "#c0c0c0",	
+                  "gray":	    "#808080",	
+                  "white":	    "#ffffff",	
+                  "maroon":	    "#800000",	
+                  "red":	    "#ff0000",	
+                  "purple":	    "#800080",	
+                  "fuchsia":	"#ff00ff",	
+                  "green":	    "#008000",	
+                  "lime":	    "#00ff00",	
+                  "olive":	    "#808000",	
+                  "yellow":	    "#ffff00",	
+                  "navy":	    "#000080",	
+                  "blue":	    "#0000ff",	
+                  "teal":	    "#008080",	
+                  "aqua":	    "#00ffff",
+                }
 
-        # Create a 4D image tensor filled with the specified color
-        image = torch.ones((1, dimension[1], dimension[0], 4), dtype=torch.float32)
+        return (create_solid_hex(colors[color], height, width), )
 
-        # Assign the RGB channels
-        image[:, :, :, :3] = color.view(1, 1, 1, 3)
-        return (image, )
-    
 class SplitRGB():
     
     def __init__(self):
@@ -276,3 +415,452 @@ def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midton
         img_copy *= (original_luminance / current_luminance).unsqueeze(-1)
 
     return img_copy
+
+class BlackAndWhite():
+    NAME = "Black and White"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_black_and_white"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "red": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "green": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "blue": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}), 
+                "cyan": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "magenta": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "yellow": ("FLOAT", {
+                    "default": 0,
+                    "min": -1.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),                 
+            }
+        }
+
+    def do_black_and_white(self, image, red, green, blue, cyan, magenta, yellow):
+        """
+        Convert a color image to black and white with adjustable color weights.
+
+        Parameters:
+        img (torch.Tensor): Input image tensor with shape [batch size, height, width, number of channels]
+        red (float): Weight for red, range -1.0 to 1.0
+        green (float): Weight for green, range -1.0 to 1.0
+        blue (float): Weight for blue, range -1.0 to 1.0
+        cyan (float): Weight for cyan, range -1.0 to 1.0
+        magenta (float): Weight for magenta, range -1.0 to 1.0
+        yellow (float): Weight for yellow, range -1.0 to 1.0
+
+        Returns:
+        torch.Tensor: Black and white image tensor with values in range 0-1
+        """
+        # Calculate minimum color value across all color channels for each pixel
+        min_c, _ = image.min(dim=-1)
+
+        # Calculate differences between color channels and minimum color value
+        diff = image - min_c.unsqueeze(-1)
+
+        # Create masks for red, green, and blue pixels
+        red_mask = (diff[:, :, :, 0] == 0)
+        green_mask = torch.logical_and((diff[:, :, :, 1] == 0), ~red_mask)
+        blue_mask = ~torch.logical_or(red_mask, green_mask)
+
+        # Calculate c, m, and yel values
+        c, _ = diff[:, :, :, 1:].min(dim=-1)
+        m, _ = diff[:, :, :, [0, 2]].min(dim=-1)
+        yel, _ = diff[:, :, :, :2].min(dim=-1)
+
+        # Calculate luminance using vectorized operations
+        luminance = min_c + red_mask * (c * cyan + (diff[:, :, :, 1] - c) * green + (diff[:, :, :, 2] - c) * blue)
+        luminance += green_mask * (m * magenta + (diff[:, :, :, 0] - m) * red + (diff[:, :, :, 2] - m) * blue)
+        luminance += blue_mask * (yel * yellow + (diff[:, :, :, 0] - yel) * red + (diff[:, :, :, 1] - yel) * green)
+
+        # Clip luminance values to be between 0 and 1
+        return (luminance.clamp(0, 1),)
+    
+
+class HueSatAdvanced():
+    NAME = "Hue/Saturation Advanced"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "do_hue_sat"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "hue_low": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_low_feather": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 180,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_high": ("FLOAT", {
+                    "default": 360,
+                    "min": 0,
+                    "max": 360.0,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_high_feather": ("FLOAT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 180,
+                    "step": 1,
+                    "round": 0.1, 
+                    "display": "number"}),
+                "hue_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -180.0,
+                    "max": 180.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "sat_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100,
+                    "max": 100,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "lightness_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100.0,
+                    "max": 100.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+            }
+        }
+
+    def do_hue_sat(self, image, hue_low, hue_low_feather, hue_high, hue_high_feather, hue_offset, sat_offset, lightness_offset):
+        
+        # Convert image to HSV and build mask
+        image_hsv = rgb_to_hsv(image)
+        mask = create_mask(image_hsv[..., 0], image_hsv[..., 1], hue_low, hue_high, hue_low_feather, hue_high_feather)
+        # Adjust hue
+        image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
+
+        # Adjust saturation
+        image_hsv[..., 1] = adjust_saturation(image_hsv[..., 1], sat_offset)
+
+        # Adjust lightness
+        image_hsv = adjust_lightness(image_hsv, lightness_offset)
+
+        # Convert back to RGB
+        adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
+
+        # Blend the original and adjusted images based on the mask
+        blended_rgb = (adjusted_image_rgb * mask.unsqueeze(-1)) + (image[..., :3] * (1 - mask.unsqueeze(-1)))
+
+        # Include the alpha channel if present
+        if image.shape[-1] == 4:
+            blended_rgba = torch.cat((blended_rgb, image[..., 3:4]), dim=-1)
+        else:
+            blended_rgba = blended_rgb
+
+        return (blended_rgba, mask)
+
+
+class HueSat():
+    NAME = "Hue/Saturation"
+    CATEGORY = "Virtuoso"
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "do_hue_sat"
+
+    @classmethod
+    def INPUT_TYPES(s) -> dict:
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "hue": (["red", "yellow", "green", "cyan", "blue", "magenta"],),
+                "hue_width": (["normal","narrow", "wide"],),
+                "feather": (["normal", "none", "wide"],),
+                "hue_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -180.0,
+                    "max": 180.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "sat_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100,
+                    "max": 100,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+                "lightness_offset": ("FLOAT", {
+                    "default": 0,
+                    "min": -100.0,
+                    "max": 100.0,
+                    "step": 0.1,
+                    "round": 0.01, 
+                    "display": "number"}),
+            }
+        }
+
+    def do_hue_sat(self, image, hue, hue_width, feather, hue_offset, sat_offset, lightness_offset):
+        
+        # Convert image to HSV 
+        image_hsv = rgb_to_hsv(image)
+
+        # Calculate ranges from parameters
+        hues = {"red": 0, "yellow": 60, "green": 120, "cyan": 180, "blue": 240, "magenta": 300}
+        widths = {"narrow": 15, "normal": 30, "wide": 60}
+        feathers = {"none": 0, "normal": 25, "wide": 50}
+        base_hue = hues[hue]
+        hue_low = base_hue - (widths[hue_width]/2)
+        if hue_low < 0:
+            hue_low = 360 - hue_low
+        hue_high = base_hue + (widths[hue_width]/2)
+
+        mask = create_mask(image_hsv[..., 0], image_hsv[..., 1], hue_low, hue_high, feathers[feather]/2, feathers[feather]/2)
+        
+        # Adjust hue
+        image_hsv[..., 0] = adjust_hue(image_hsv[..., 0], hue_offset)
+
+        # Adjust saturation
+        image_hsv[..., 1] = adjust_saturation(image_hsv[..., 1], sat_offset)
+
+        # Adjust lightness
+        image_hsv = adjust_lightness(image_hsv, lightness_offset)
+
+        # Convert back to RGB
+        adjusted_image_rgb = hsv_to_rgb(image_hsv[..., :3])
+
+        # Blend the original and adjusted images based on the mask
+        blended_rgb = (adjusted_image_rgb * mask.unsqueeze(-1)) + (image[..., :3] * (1 - mask.unsqueeze(-1)))
+
+        # Include the alpha channel if present
+        if image.shape[-1] == 4:
+            blended_rgba = torch.cat((blended_rgb, image[..., 3:4]), dim=-1)
+        else:
+            blended_rgba = blended_rgb
+
+        return (blended_rgba, mask)
+
+## Support functions
+def create_solid_rgb(r, g, b, h, w):
+    return torch.zeros(1, h, w, 3) + torch.tensor([r/255.0, g/255.0, b/255.0])
+
+def create_solid_hsv(h, s, v, h_img, w_img):
+    r, g, b = colorsys.hsv_to_rgb(h/360.0, s/100.0, v/100.0)
+    return torch.zeros(1, h_img, w_img, 3) + torch.tensor([r, g, b])
+
+def create_solid_hex(hex, h, w):
+    if hex[0] == '#':
+        hex = hex[1:]
+    r, g, b = tuple(int(hex[i:i+2], 16)/255.0 for i in (0, 2, 4))
+    return torch.zeros(1, h, w, 3) + torch.tensor([r, g, b])
+
+def validate_hex_code(hex_code):
+    hex_code = hex_code.lstrip('#')
+    
+    if len(hex_code) == 3 and all(c in '0123456789ABCDEFabcdef' for c in hex_code):
+        return ''.join([c*2 for c in hex_code]).upper()
+    elif len(hex_code) == 6 and all(c in '0123456789ABCDEFabcdef' for c in hex_code):
+        return hex_code.upper()
+    else:
+        return ""
+
+# Thanks to MA Lee for conversion code    
+def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:
+    
+    input_tensor = rgb.clone()
+
+    # Check if there's an alpha channel
+    has_alpha = input_tensor.shape[-1] == 4
+    
+    # Remove the alpha channel if it exists
+    if has_alpha:
+        alpha_channel = input_tensor[:, :, :, 3:4]
+        input_tensor = input_tensor[:, :, :, :3]
+    
+    # Permute the dimensions from [B, H, W, 3] to [B, 3, H, W]
+    input_tensor = input_tensor.permute(0, 3, 1, 2)
+    
+    # Convert RGB to HSV
+    cmax, cmax_idx = torch.max(input_tensor, dim=1, keepdim=True)
+    cmin = torch.min(input_tensor, dim=1, keepdim=True)[0]
+    delta = cmax - cmin
+    hsv_h = torch.empty_like(input_tensor[:, 0:1, :, :])
+    cmax_idx[delta == 0] = 3
+    hsv_h[cmax_idx == 0] = (((input_tensor[:, 1:2] - input_tensor[:, 2:3]) / delta) % 6)[cmax_idx == 0]
+    hsv_h[cmax_idx == 1] = (((input_tensor[:, 2:3] - input_tensor[:, 0:1]) / delta) + 2)[cmax_idx == 1]
+    hsv_h[cmax_idx == 2] = (((input_tensor[:, 0:1] - input_tensor[:, 1:2]) / delta) + 4)[cmax_idx == 2]
+    hsv_h[cmax_idx == 3] = 0.
+    hsv_h /= 6.
+    hsv_s = torch.where(cmax == 0, torch.tensor(0.).type_as(input_tensor), delta / cmax)
+    hsv_v = cmax
+    hsv_tensor = torch.cat([hsv_h, hsv_s, hsv_v], dim=1)
+    
+    # Permute the dimensions back to [B, H, W, 3]
+    hsv_tensor = hsv_tensor.permute(0, 2, 3, 1)
+    
+    # Add back the alpha channel if it was present
+    if has_alpha:
+        hsv_tensor = torch.cat([hsv_tensor, alpha_channel], dim=-1)
+    
+    return hsv_tensor
+
+def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
+
+    input_tensor = hsv.clone()
+
+    # Check if there's an alpha channel
+    has_alpha = input_tensor.shape[-1] == 4
+    
+    # Remove the alpha channel if it exists
+    if has_alpha:
+        alpha_channel = input_tensor[:, :, :, 3:4]
+        input_tensor = input_tensor[:, :, :, :3]
+    
+    # Permute the dimensions from [B, H, W, 3] to [B, 3, H, W]
+    input_tensor = input_tensor.permute(0, 3, 1, 2)
+    
+    # Extract HSV components
+    hsv_h, hsv_s, hsv_v = input_tensor[:, 0:1], input_tensor[:, 1:2], input_tensor[:, 2:3]
+    _c = hsv_v * hsv_s
+    _x = _c * (- torch.abs(hsv_h * 6. % 2. - 1) + 1.)
+    _m = hsv_v - _c
+    _o = torch.zeros_like(_c)
+    idx = (hsv_h * 6.).type(torch.uint8)
+    idx = (idx % 6).expand(-1, 3, -1, -1)
+    rgb = torch.empty_like(input_tensor)
+    rgb[idx == 0] = torch.cat([_c, _x, _o], dim=1)[idx == 0]
+    rgb[idx == 1] = torch.cat([_x, _c, _o], dim=1)[idx == 1]
+    rgb[idx == 2] = torch.cat([_o, _c, _x], dim=1)[idx == 2]
+    rgb[idx == 3] = torch.cat([_o, _x, _c], dim=1)[idx == 3]
+    rgb[idx == 4] = torch.cat([_x, _o, _c], dim=1)[idx == 4]
+    rgb[idx == 5] = torch.cat([_c, _o, _x], dim=1)[idx == 5]
+    rgb += _m
+    
+    # Permute the dimensions back to [B, H, W, 3]
+    rgb_tensor = rgb.permute(0, 2, 3, 1)
+    
+    # Add back the alpha channel if it was present
+    if has_alpha:
+        rgb_tensor = torch.cat([rgb_tensor, alpha_channel], dim=-1)
+    
+    return rgb_tensor
+
+def create_mask(hue, saturation, hue_low, hue_high, hue_low_feather, hue_high_feather):
+    # Normalize the values to the range [0, 1]
+    hue_low_norm = hue_low / 360.0
+    hue_high_norm = hue_high / 360.0
+    hue_low_feather_norm = hue_low_feather / 360.0
+    hue_high_feather_norm = hue_high_feather / 360.0
+
+    # Calculate the mask
+    mask_low = linearstep(hue_low_norm - hue_low_feather_norm, hue_low_norm, hue, increasing=True)
+    mask_high = linearstep(hue_high_norm, hue_high_norm + hue_high_feather_norm, hue, increasing=False)
+    
+    if hue_low_norm < hue_high_norm:
+        mask_middle = torch.where((hue >= hue_low_norm) & (hue <= hue_high_norm), torch.tensor(1.0), torch.tensor(0.0))
+    else:
+        mask_middle = torch.where((hue <= hue_low_norm) & (hue >= hue_high_norm), torch.tensor(0.0), torch.tensor(1.0))
+
+    # Calculate the final mask by taking the maximum value among the three masks
+    mask = torch.max(torch.max(mask_low, mask_middle), mask_high)
+
+    # Only select pixels with a saturation greater than 0
+    mask = torch.where(saturation > 0, mask, torch.tensor(0.0))
+
+    return mask
+
+def linearstep(low_edge, high_edge, x, increasing=True):
+    # Handle the case where the gradient overflows past 0
+    if low_edge < 0:
+        # Define gradient function for low gradient
+        overflow_mask_low = torch.where((x >= 0) & (x <= high_edge), (x - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
+        overflow_mask_high = torch.where((x >= (1 + low_edge)) & (x <= 1), (x - 1 - low_edge) / (high_edge - low_edge), torch.tensor(0.0))
+        mask = torch.max(overflow_mask_low, overflow_mask_high)
+    elif high_edge > 1:
+        overflow_mask_high = torch.where((x >= low_edge) & (x <= 1), 1 - ((x - low_edge) / (high_edge - low_edge)), torch.tensor(0.0))
+        overflow_mask_low = torch.where((x >= 0) & (x <= (high_edge - 1)), 1 - ((x + 1 - low_edge) / (high_edge - low_edge)), torch.tensor(0.0))
+        mask = torch.max(overflow_mask_low, overflow_mask_high)
+    else:
+        # Create a mask where values within the range are set to abs( (hue value - low_edge)/(high_edge - low_edge))
+        gradient = torch.abs((x - low_edge) / (high_edge - low_edge))
+        if not increasing:
+            gradient = 1 - gradient
+        # Return the mask where values within the range are set to the gradient, and 0 otherwise
+        mask = torch.where((x >= low_edge) & (x <= high_edge), gradient, torch.tensor(0.0))
+
+    return mask
+
+def adjust_saturation(saturation, sat_offset):
+    # Calculate the change in saturation
+    if sat_offset < 0:
+        delta_saturation = (sat_offset / 100.0) * saturation
+    else:
+        delta_saturation = (sat_offset / 100.0) * (1 - saturation)
+    # Apply the change to the saturation channel
+    new_saturation = torch.clamp(saturation + delta_saturation, 0, 1)
+    return new_saturation
+
+def adjust_hue(hue, hue_offset):
+    # Normalize hue_offset to the range [0, 1]
+    hue_offset_normalized = hue_offset / 360.0
+    # Apply the normalized hue_offset and ensure the result is within [0, 1]
+    new_hue = (hue + hue_offset_normalized) % 1.0
+    return new_hue
+
+def adjust_lightness(image_hsv, lightness_offset):
+    # Map lightness_offset to [-1, 1]
+    offset = lightness_offset / 100.0
+
+    # If lightness_offset < 0, interpolate between the image and a black image
+    if lightness_offset < 0:
+        image_hsv[..., 2] = image_hsv[..., 2] * (1 + offset)
+    # If lightness_offset > 0, interpolate between the image and a white image
+    elif lightness_offset > 0:
+        image_hsv[..., 2] = image_hsv[..., 2] * (1 - offset) + offset
+        # Also reduce the saturation as the lightness increases
+        image_hsv[..., 1] = image_hsv[..., 1] * ((1 - offset) ** 0.45)
+
+    return image_hsv

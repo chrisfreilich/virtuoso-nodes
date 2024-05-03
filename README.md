@@ -9,6 +9,13 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-advanced-node): Color balance of a targeted brightness range.
 6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
 7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
+8. [**Levels**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#levels): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
+9. [**Black and White**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#black-and-white): Transform a color image into Black and White while controlling brightness levels based on hue. Works the same as Photoshop's Black and White adjustment layer.
+10. [**Hue/Saturation**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation): Simplified version of the Advanced Hue/Saturation Node. Allows you to choose colors by name, and choose from preset range sizes and feather values.
+11. [**Hue/Saturation Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation-advanced): Control Hue, Saturation, and Lightness of an image based on the selection of a range of hues. Works the same as Photoshop's Hue/Saturation adjustment layer.
+12. [**Solid Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color): Create a solid color image by choosing from a list of 16 basic colors.
+13. [**Solid Color RGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color-rgb): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
+14. [**Solid Color HSV**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color-hsv): Create a solid color image by entering Hue, Saturation, and Value.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 <br><br>
@@ -125,7 +132,154 @@ These nodes split apart images into their component color channels and merge the
 
 - **image**: The image to split on the Split RGB node, and the merged image on the Merge RGB node
 - **red, green, blue**: The separate images holding the red, green, and blue channels of the image. Note that there is nothing stopping you from using any images you want here on the Merge RGB node-- the node will only take the indicated color channel from each image.
+
+ <br>
+
+ ## Levels 
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/1e94949f-8e97-4e35-81b2-3f110bce9ea5)
+
+This node works just like Photoshop's Levels, without the fancy controls. Move around your black and white points and your gamma, across all channels, or select just one color channel.
+
+### Node controls:
+
+- **image**: The image to set the levels for.
+- **channel**: Choose 'RGB' to work on the whole image, or a color to set levels only on that color channel.
+- **input_black_point**: Choose what brightness level becomes black. 0 is black, 1 is white.
+- **input_gamma**: Adjust the gamma.
+- **input_white_point**: Choose what brightness level becomes white. 0 is black, 1 is white.
+- **output_black_point**: After input calculations are complete, what brightness will black pixels be output at.
+- **output_white_point**: After input calculations are complete, what brightness will white pixels be output at.
+
+  <br>
   
+## Black and White 
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/847120dd-6b24-4255-b7f7-070cf9482b2d)
+
+This node works just like Photoshop's Black and White adjustment layer. Add or remove brightness based on each of the color ranges in the image.
+
+### Node controls:
+
+- **image**: The image to set the levels for.
+- **red, green, blue, cyan, magenta, yellow**: Reduce these values to make the given color range darker, increase the values to make the given color range brighter.
+
+  <br>
+
+  
+## Hue / Saturation
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/dfff5749-362d-4cee-affd-b7ca51b64a77)
+
+This node works like a simplified version of Photoshop's Hue/Saturation adjustment layer. Select a color range to work on, then change the hue, saturation, and lightness of that range. Note that Stable Diffusion images seem to have pretty brutal color compression, so this node is best for subtle effects... otherwise things get pretty weird.
+
+### Node input controls:
+
+- **image**: The image to set the levels for.
+- **hue**: Choose the main color to affect.
+- **hue_width**: How far away from the main color do you want to full affect?
+- **feather**: How much softening do you want from fully selected colors to unselected colors?
+- **hue_offset**: This value changes each pixel's hue value by rotating it this number of degrees around the color wheel. Each color on the hue list is 60 degrees apart.
+- **sat_offset**: This value increases or decreases color saturation.
+- **lightness_offset**: This value affects how much white or black is added to the image.
+
+### Node Outputs
+- **IMAGE**: The final image 
+- **MASK**: This is the mask generated by the hue selection process. It can be useful to ensure you are getting the result you want, or to do further processing on the same pixels.
+
+<br>
+  
+
+## Hue / Saturation Advanced
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/c25f67de-c4a2-47ef-8ed0-f88110da45df)
+
+This node works like Photoshop's Hue/Saturation adjustment layer. Select a color range to work on, then change the hue, saturation, and lightness of that range. Note that Stable Diffusion images seem to have pretty brutal color compression, so this node is best for subtle effects... otherwise things get pretty weird.
+
+To use this node well, you need to be aware of where the colors are placed on the color wheel. The measurements are in degrees:
+
+- **Red**: 0 degrees (and 360 degrees)
+- **Yellow**: 60 degrees
+- **Green**: 120 degrees
+- **Cyan**: 180 degrees
+- **Blue**: 240 degrees
+- **Magenta**: 300 degrees
+
+### Node input controls:
+
+- **image**: The image to set the levels for.
+- **hue_low**: What hue (in degrees) will start the range of fully selected hues?
+- **hue_low_feather**: How many hue degrees will the low end of the selected hue range take to feather from fully selected to unselected?
+- **hue_high**: What hue (in degrees) will end the range of fully selected hues? Note that because the hue wheel is a circle, the hue_high value can be lower than the hue_low value.
+- **hue_high_feather**: How many hue degrees will the high end of the selected hue range take to feather from fully selected to unselected?
+- **hue_offset**: This value changes each pixel's hue value by rotating it this number of degrees around the color wheel. 
+- **sat_offset**: This value increases or decreases color saturation.
+- **lightness_offset**: This value affects how much white or black is added to the image.
+
+### Node Outputs
+- **IMAGE**: The final image 
+- **MASK**: This is the mask generated by the hue selection process. It can be useful to ensure you are getting the result you want, or to do further processing on the same pixels.
+
+<br>
+  
+
+## Solid Color
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/ca816e05-13e7-44fa-b31c-03dbdc727ee5)
+
+This node is a simple way to create a solid color image by choosing a color from a list.
+
+### Node input controls:
+
+- **color**: The color to make the new solid color image.
+- **height**: Pixel height of new solid color image.
+- **width**: Pixel width of new solid color image.
+
+<br>
+  
+
+## Solid Color RGB
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/07ae616e-ff85-48b5-94da-bc16b748f9da)
+
+This node creatse a solid color image by setting the Red, Green, and Blue values, or one hexidecimal value.
+
+### Node input controls:
+
+- **red, green, blue**: The amount of each primary color to include in the color image. Values are 0-255, with 0 meaning none of the primary color and 255 being 100% of that color.
+- **height**: Pixel height of new solid color image.
+- **width**: Pixel width of new solid color image.
+- **hex**: A hexidecimal code containing an RGB value. If this value is provided and is valid, it will be used instead of the above red, green, and blue values.
+
+<br>
+
+
+## Solid Color HSV
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/0d983e1f-9ae8-43fb-bd67-d78a322207e2)
+
+This node creatse a solid color image by setting the hue, saturation, and value of the color. To use this node well, you need to be aware of where the colors are placed on the color wheel. The measurements are in degrees:
+
+- **Red**: 0 degrees (and 360 degrees)
+- **Yellow**: 60 degrees
+- **Green**: 120 degrees
+- **Cyan**: 180 degrees
+- **Blue**: 240 degrees
+- **Magenta**: 300 degrees
+
+Note that any color with the value set to 0 will be black, but not every color with the value set to 100 will be white. If you want white, use value = 100 and saturation = 0.
+
+### Node input controls:
+
+- **hue**: The degree value of the hue you want.
+- **saturation**: The percent of color saturation you want for the color.
+- **value**: The brightness of the color, in percentage from 0-100.
+- **height**: Pixel height of new solid color image.
+- **width**: Pixel width of new solid color image.
+
+<br>
+
+
 # Installation:
 
 1. Git clone this repo into a folder in ComfyUI\custom_nodes.
