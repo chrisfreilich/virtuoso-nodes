@@ -14,7 +14,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 10. [**Hue/Saturation**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation): Simplified version of the Advanced Hue/Saturation Node. Allows you to choose colors by name, and choose from preset range sizes and feather values.
 11. [**Hue/Saturation Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation-advanced): Control Hue, Saturation, and Lightness of an image based on the selection of a range of hues. Works the same as Photoshop's Hue/Saturation adjustment layer.
 12. [**Solid Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color): Create a solid color image by choosing from a list of 16 basic colors.
-13. [**Solid Color RGB**](): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
+13. [**Solid Color RGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color-rgb): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
 14. [**Solid Color HSV**](): Create a solid color image by entering Hue, Saturation, and Value.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
