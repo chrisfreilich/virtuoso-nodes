@@ -13,7 +13,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 9. [**Black and White**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#black-and-white): Transform a color image into Black and White while controlling brightness levels based on hue. Works the same as Photoshop's Black and White adjustment layer.
 10. [**Hue/Saturation**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation): Simplified version of the Advanced Hue/Saturation Node. Allows you to choose colors by name, and choose from preset range sizes and feather values.
 11. [**Hue/Saturation Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation-advanced): Control Hue, Saturation, and Lightness of an image based on the selection of a range of hues. Works the same as Photoshop's Hue/Saturation adjustment layer.
-12. [**Solid Color**](): Create a solid color image by choosing from a list of 16 basic colors.
+12. [**Solid Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color): Create a solid color image by choosing from a list of 16 basic colors.
 13. [**Solid Color RGB**](): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
 14. [**Solid Color HSV**](): Create a solid color image by entering Hue, Saturation, and Value.
 
@@ -238,7 +238,23 @@ This node is a simple way to create a solid color image by choosing a color from
 <br>
   
 
-### Installation:
+## Solid Color RGB
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/07ae616e-ff85-48b5-94da-bc16b748f9da)
+
+This node creatse a solid color image by setting the Red, Green, and Blue values, or one hexidecimal value.
+
+### Node input controls:
+
+- **red, green, blue**: The amount of each primary color to include in the color image. Values are 0-255, with 0 meaning none of the primary color and 255 being 100% of that color.
+- **height**: Pixel height of new solid color image.
+- **width**: Pixel width of new solid color image.
+- **hex**: A hexidecimal code containing an RGB value. If this value is provided and is valid, it will be used instead of the above red, green, and blue values.
+
+<br>
+
+
+# Installation:
 
 1. Git clone this repo into a folder in ComfyUI\custom_nodes.
 2. pip install -r requirements.txt.
