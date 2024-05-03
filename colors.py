@@ -1,7 +1,7 @@
 """
 @author: Chris Freilich
 @title: Virtuoso Pack - Color Nodes
-@nickname: Virtuoso Pack -Color Nodes
+@nickname: Virtuoso Pack - Color Nodes
 @description: This extension provides a solid color node, Color Balance Node, Color Balance Advanced Node,
 SplitRGB and MergeRGB nodes, Hue/Saturation, and Black and White node.
 """
