@@ -203,10 +203,10 @@ class SplitRGB():
         green = torch.zeros_like(image)
         blue = torch.zeros_like(image)
 
-        # Assign the corresponding color channels from the input image
-        red[0, :, :, 0] = image[0, :, :, 0]
-        green[0, :, :, 1] = image[0, :, :, 1]
-        blue[0, :, :, 2] = image[0, :, :, 2]
+        # Assign the corresponding color channels from the input image to all images in the batch
+        red[:, :, :, 0] = image[:, :, :, 0]
+        green[:, :, :, 1] = image[:, :, :, 1]
+        blue[:, :, :, 2] = image[:, :, :, 2]
 
         return (red, green, blue)
     
