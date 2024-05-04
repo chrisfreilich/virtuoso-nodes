@@ -17,7 +17,7 @@ This set of nodes is designed to give some Photoshop-like functionality within C
 13. [**Solid Color RGB**](https://github.com/chrisfreilich/virtuoso-nodes#solid-color-rgb): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
 14. [**Solid Color HSV**](https://github.com/chrisfreilich/virtuoso-nodes#solid-color-hsv): Create a solid color image by entering Hue, Saturation, and Value.
 
-[**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
+[**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes#installation)
 <br><br>
 
 ## Blend Modes
