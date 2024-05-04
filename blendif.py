@@ -100,16 +100,25 @@ class BlendIf:
 
         # Resize top_layer and mask to match bottom_layer
         if match_size == 'stretch':
-            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), size=bottom_layer.shape[2:], mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
+            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), size=(bottom_layer.shape[1], bottom_layer.shape[2]), mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
+
             if mask is not None:
-                mask = F.interpolate(mask.unsqueeze(1), size=bottom_layer.shape[2:], mode='nearest').squeeze(1)
+                # Resize mask to match bottom_layer size
+                mask = F.interpolate(mask.unsqueeze(1), size=(bottom_layer.shape[1], bottom_layer.shape[2]), mode='nearest').squeeze(1)
         else:
-            # Resize while keeping aspect ratio constant
-            scale_factor_top = max(bottom_layer.shape[2] / top_layer.shape[1], bottom_layer.shape[3] / top_layer.shape[2])
-            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), scale_factor=scale_factor_top, mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
+            # Calculate scale factor
+            scale_factor = min(bottom_layer.shape[2] / top_layer.shape[2], bottom_layer.shape[3] / top_layer.shape[3])
+
+            # Resize top_layer while keeping aspect ratio constant
+            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), scale_factor=scale_factor, mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
+
+            # Crop top_layer to match bottom_layer size
+            top_layer = top_layer[:, :bottom_layer.shape[1], :bottom_layer.shape[2], :]
+
             if mask is not None:
-                scale_factor_mask = max(bottom_layer.shape[2] / mask.shape[1], bottom_layer.shape[3] / mask.shape[2])
-                mask = F.interpolate(mask.unsqueeze(1), scale_factor=scale_factor_mask, mode='nearest').squeeze(1)
+                # Resize and crop mask in the same way
+                mask = F.interpolate(mask.unsqueeze(1), scale_factor=scale_factor, mode='nearest').squeeze(1)
+                mask = mask[:, :bottom_layer.shape[1], :bottom_layer.shape[2]]
 
         # Invert the mask if required
         if invert_mask == 'yes' and mask is not None:
