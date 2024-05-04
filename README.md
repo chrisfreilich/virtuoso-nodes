@@ -2,20 +2,20 @@
 
 This set of nodes is designed to give some Photoshop-like functionality within ComfyUI. The nodes available are:
 
-1. [**Blend Modes**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-modes): Applies an image to another image using a blend mode operation. Every conceivable blend mode is available.
-2. [**Blend If**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#blend-if-node): Composites one image on top of another with transparency based on several parameters.
-3. [**Selective Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#selective-color-node): Adjust the color of a specific color or brightness range in an image, as with Photoshop's Selective Color adjustment layer.
-4. [**Color Balance**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-node): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
-5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#color-balance-advanced-node): Color balance of a targeted brightness range.
-6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
-7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
-8. [**Levels**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#levels): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
-9. [**Black and White**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#black-and-white): Transform a color image into Black and White while controlling brightness levels based on hue. Works the same as Photoshop's Black and White adjustment layer.
-10. [**Hue/Saturation**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation): Simplified version of the Advanced Hue/Saturation Node. Allows you to choose colors by name, and choose from preset range sizes and feather values.
-11. [**Hue/Saturation Advanced**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#hue--saturation-advanced): Control Hue, Saturation, and Lightness of an image based on the selection of a range of hues. Works the same as Photoshop's Hue/Saturation adjustment layer.
-12. [**Solid Color**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color): Create a solid color image by choosing from a list of 16 basic colors.
-13. [**Solid Color RGB**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color-rgb): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
-14. [**Solid Color HSV**](https://github.com/chrisfreilich/virtuoso-nodes/blob/contrast/README.md#solid-color-hsv): Create a solid color image by entering Hue, Saturation, and Value.
+1. [**Blend Modes**](https://github.com/chrisfreilich/virtuoso-nodes#blend-modes): Applies an image to another image using a blend mode operation. Every conceivable blend mode is available.
+2. [**Blend If**](https://github.com/chrisfreilich/virtuoso-nodes#blend-if-node): Composites one image on top of another with transparency based on several parameters.
+3. [**Selective Color**](https://github.com/chrisfreilich/virtuoso-nodes#selective-color-node): Adjust the color of a specific color or brightness range in an image, as with Photoshop's Selective Color adjustment layer.
+4. [**Color Balance**](https://github.com/chrisfreilich/virtuoso-nodes#color-balance-node): Make detailed color balance adjustments to shadows, midtones, and highlights of an image.
+5. [**Color Balance Advanced**](https://github.com/chrisfreilich/virtuoso-nodes#color-balance-advanced-node): Color balance of a targeted brightness range.
+6. [**SplitRGB**](https://github.com/chrisfreilich/virtuoso-nodes#split-rgb-and-merge-rgb): This node takes an image and splits it into its red, green, and blue components. These then can be used in creative ways with blend modes as well.
+7. [**MergeRGB**](https://github.com/chrisfreilich/virtuoso-nodes#split-rgb-and-merge-rgb): This node takes three images, and merges the specified channels into one image. It is the complementary node to the SplitRGB node, to be used to recombine channels that you have split, though you can feel free to merge any images you wish for trippy effects.
+8. [**Levels**](https://github.com/chrisfreilich/virtuoso-nodes#levels): Adjust the brightness levels of an image or single color channels. Works the same as Photoshop's Levels adjustment layer.
+9. [**Black and White**](https://github.com/chrisfreilich/virtuoso-nodes#black-and-white): Transform a color image into Black and White while controlling brightness levels based on hue. Works the same as Photoshop's Black and White adjustment layer.
+10. [**Hue/Saturation**](https://github.com/chrisfreilich/virtuoso-nodes#hue--saturation): Simplified version of the Advanced Hue/Saturation Node. Allows you to choose colors by name, and choose from preset range sizes and feather values.
+11. [**Hue/Saturation Advanced**](https://github.com/chrisfreilich/virtuoso-nodes#hue--saturation-advanced): Control Hue, Saturation, and Lightness of an image based on the selection of a range of hues. Works the same as Photoshop's Hue/Saturation adjustment layer.
+12. [**Solid Color**](https://github.com/chrisfreilich/virtuoso-nodes#solid-color): Create a solid color image by choosing from a list of 16 basic colors.
+13. [**Solid Color RGB**](https://github.com/chrisfreilich/virtuoso-nodes#solid-color-rgb): Create a solid color image by entering Red, Green, and Blue values, or entering an RGB hex value.
+14. [**Solid Color HSV**](https://github.com/chrisfreilich/virtuoso-nodes#solid-color-hsv): Create a solid color image by entering Hue, Saturation, and Value.
 
 [**Installation Instructions**](https://github.com/chrisfreilich/virtuoso-nodes/blob/selective-nodes/README.md#installation)
 <br><br>
