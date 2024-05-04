@@ -510,7 +510,20 @@ class BlackAndWhite():
         luminance += blue_mask * (yel * yellow + (diff[:, :, :, 0] - yel) * red + (diff[:, :, :, 1] - yel) * green)
 
         # Clip luminance values to be between 0 and 1
-        return (luminance.clamp(0, 1),)
+        luminance = luminance.clamp(0, 1)
+
+        # Add an extra dimension for color channels
+        luminance = luminance.unsqueeze(-1)
+
+        # Convert grayscale to RGB by duplicating the grayscale channel
+        rgb_image = luminance.expand(-1, -1, -1, 3)
+
+        # If the original image had an alpha channel, append it back
+        if image.shape[-1] == 4:
+            alpha_channel = image[:, :, :, 3:]
+            rgb_image = torch.cat((rgb_image, alpha_channel), dim=-1)
+
+        return (rgb_image,)
     
 
 class HueSatAdvanced():
