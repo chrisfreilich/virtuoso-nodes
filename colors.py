@@ -669,7 +669,7 @@ class HueSat():
         base_hue = hues[hue]
         hue_low = base_hue - (widths[hue_width]/2)
         if hue_low < 0:
-            hue_low = 360 - hue_low
+            hue_low = 360 + hue_low
         hue_high = base_hue + (widths[hue_width]/2)
 
         mask = create_mask(image_hsv[..., 0], image_hsv[..., 1], hue_low, hue_high, feathers[feather]/2, feathers[feather]/2)
