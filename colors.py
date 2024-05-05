@@ -9,6 +9,7 @@ SolidColorRGB, SolidColorHSV, and Black and White nodes.
 import torch
 from scipy.interpolate import CubicSpline
 import colorsys
+from .hsv import rgb_to_hsv, hsv_to_rgb
 
 class SolidColorRGB():
     NAME = "Solid Color RGB"
@@ -719,87 +720,6 @@ def validate_hex_code(hex_code):
         return hex_code.upper()
     else:
         return ""
-
-# Thanks to MA Lee for conversion code    
-def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:
-    
-    input_tensor = rgb.clone()
-
-    # Check if there's an alpha channel
-    has_alpha = input_tensor.shape[-1] == 4
-    
-    # Remove the alpha channel if it exists
-    if has_alpha:
-        alpha_channel = input_tensor[:, :, :, 3:4]
-        input_tensor = input_tensor[:, :, :, :3]
-    
-    # Permute the dimensions from [B, H, W, 3] to [B, 3, H, W]
-    input_tensor = input_tensor.permute(0, 3, 1, 2)
-    
-    # Convert RGB to HSV
-    cmax, cmax_idx = torch.max(input_tensor, dim=1, keepdim=True)
-    cmin = torch.min(input_tensor, dim=1, keepdim=True)[0]
-    delta = cmax - cmin
-    hsv_h = torch.empty_like(input_tensor[:, 0:1, :, :])
-    cmax_idx[delta == 0] = 3
-    hsv_h[cmax_idx == 0] = (((input_tensor[:, 1:2] - input_tensor[:, 2:3]) / delta) % 6)[cmax_idx == 0]
-    hsv_h[cmax_idx == 1] = (((input_tensor[:, 2:3] - input_tensor[:, 0:1]) / delta) + 2)[cmax_idx == 1]
-    hsv_h[cmax_idx == 2] = (((input_tensor[:, 0:1] - input_tensor[:, 1:2]) / delta) + 4)[cmax_idx == 2]
-    hsv_h[cmax_idx == 3] = 0.
-    hsv_h /= 6.
-    hsv_s = torch.where(cmax == 0, torch.tensor(0.).type_as(input_tensor), delta / cmax)
-    hsv_v = cmax
-    hsv_tensor = torch.cat([hsv_h, hsv_s, hsv_v], dim=1)
-    
-    # Permute the dimensions back to [B, H, W, 3]
-    hsv_tensor = hsv_tensor.permute(0, 2, 3, 1)
-    
-    # Add back the alpha channel if it was present
-    if has_alpha:
-        hsv_tensor = torch.cat([hsv_tensor, alpha_channel], dim=-1)
-    
-    return hsv_tensor
-
-def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
-
-    input_tensor = hsv.clone()
-
-    # Check if there's an alpha channel
-    has_alpha = input_tensor.shape[-1] == 4
-    
-    # Remove the alpha channel if it exists
-    if has_alpha:
-        alpha_channel = input_tensor[:, :, :, 3:4]
-        input_tensor = input_tensor[:, :, :, :3]
-    
-    # Permute the dimensions from [B, H, W, 3] to [B, 3, H, W]
-    input_tensor = input_tensor.permute(0, 3, 1, 2)
-    
-    # Extract HSV components
-    hsv_h, hsv_s, hsv_v = input_tensor[:, 0:1], input_tensor[:, 1:2], input_tensor[:, 2:3]
-    _c = hsv_v * hsv_s
-    _x = _c * (- torch.abs(hsv_h * 6. % 2. - 1) + 1.)
-    _m = hsv_v - _c
-    _o = torch.zeros_like(_c)
-    idx = (hsv_h * 6.).type(torch.uint8)
-    idx = (idx % 6).expand(-1, 3, -1, -1)
-    rgb = torch.empty_like(input_tensor)
-    rgb[idx == 0] = torch.cat([_c, _x, _o], dim=1)[idx == 0]
-    rgb[idx == 1] = torch.cat([_x, _c, _o], dim=1)[idx == 1]
-    rgb[idx == 2] = torch.cat([_o, _c, _x], dim=1)[idx == 2]
-    rgb[idx == 3] = torch.cat([_o, _x, _c], dim=1)[idx == 3]
-    rgb[idx == 4] = torch.cat([_x, _o, _c], dim=1)[idx == 4]
-    rgb[idx == 5] = torch.cat([_c, _o, _x], dim=1)[idx == 5]
-    rgb += _m
-    
-    # Permute the dimensions back to [B, H, W, 3]
-    rgb_tensor = rgb.permute(0, 2, 3, 1)
-    
-    # Add back the alpha channel if it was present
-    if has_alpha:
-        rgb_tensor = torch.cat([rgb_tensor, alpha_channel], dim=-1)
-    
-    return rgb_tensor
 
 def create_mask(hue, saturation, hue_low, hue_high, hue_low_feather, hue_high_feather):
     # Normalize the values to the range [0, 1]
