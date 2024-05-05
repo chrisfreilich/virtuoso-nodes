@@ -5,22 +5,7 @@
 @description: This extension provides a "Blend If (BlendIf)" node.
 """
 import torch
-import torch.nn.functional as F
-
-def calculate_opacity(t, start_rise, end_rise, start_fall, end_fall):
-    # Values to the left of start_rise and to the right of end_fall return 0
-    opacity = torch.zeros_like(t)
-    # Apply cubic-bezier curve between start_rise and end_rise
-    rise_mask = (t > start_rise) & (t < end_rise)
-    t_normalized = (t[rise_mask] - start_rise) / (end_rise - start_rise)
-    opacity[rise_mask] = 3 * t_normalized**2 - 2 * t_normalized**3
-    # Values between end_rise and start_fall return 1
-    opacity[(t >= end_rise) & (t <= start_fall)] = 1.0
-    # Apply cubic-bezier curve between start_fall and end_fall
-    fall_mask = (t > start_fall) & (t < end_fall)
-    t_normalized = (t[fall_mask] - start_fall) / (end_fall - start_fall)
-    opacity[fall_mask] = 1 - (3 * t_normalized**2 - 2 * t_normalized**3)
-    return opacity
+from .resize import match_sizes
 
 class BlendIf:
     
@@ -84,67 +69,67 @@ class BlendIf:
     CATEGORY = "Virtuoso"
 
     def do_blendif(self, top_layer, bottom_layer, blend_if_layer, blend_if_channel, start_rise, end_rise, start_fall, end_fall, opacity, match_size, invert_mask, mask=None):
+        
+        t = top_layer.clone()
+        b = bottom_layer.clone()
+          
         # Ensure the parameters are in order
         parameters = [end_fall, start_fall, end_rise, start_rise]
         for i in range(len(parameters) - 1):
             for j in range(i + 1, len(parameters)):
                 if parameters[i] < parameters[j]:
                     parameters[i] = parameters[j]
-        end_fall, start_fall, end_rise, start_rise = parameters
+        end_fall_adjusted, start_fall_adjusted, end_rise_adjusted, start_rise_adjusted = parameters
 
         # Remove alpha channel if it exists (we use mask parameter if passed in)
-        if top_layer.shape[-1] == 4:
-            top_layer = top_layer[..., :3]
-        if bottom_layer.shape[-1] == 4:
-            bottom_layer = bottom_layer[..., :3]
+        if t.shape[-1] == 4:
+            t = t[..., :3]
+        if b.shape[-1] == 4:
+            b = b[..., :3]
 
-        # Resize top_layer and mask to match bottom_layer
-        if match_size == 'stretch':
-            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), size=(bottom_layer.shape[1], bottom_layer.shape[2]), mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
-
-            if mask is not None:
-                # Resize mask to match bottom_layer size
-                mask = F.interpolate(mask.unsqueeze(1), size=(bottom_layer.shape[1], bottom_layer.shape[2]), mode='nearest').squeeze(1)
-        else:
-            # Calculate scale factor
-            scale_factor = min(bottom_layer.shape[2] / top_layer.shape[2], bottom_layer.shape[3] / top_layer.shape[3])
-
-            # Resize top_layer while keeping aspect ratio constant
-            top_layer = F.interpolate(top_layer.permute(0, 3, 1, 2), scale_factor=scale_factor, mode='bilinear', align_corners=False).permute(0, 2, 3, 1)
-
-            # Crop top_layer to match bottom_layer size
-            top_layer = top_layer[:, :bottom_layer.shape[1], :bottom_layer.shape[2], :]
-
-            if mask is not None:
-                # Resize and crop mask in the same way
-                mask = F.interpolate(mask.unsqueeze(1), scale_factor=scale_factor, mode='nearest').squeeze(1)
-                mask = mask[:, :bottom_layer.shape[1], :bottom_layer.shape[2]]
+        t, m = match_sizes(match_size, top_layer, bottom_layer, mask)
 
         # Invert the mask if required
-        if invert_mask == 'yes' and mask is not None:
-            mask = 1 - mask
+        if invert_mask == 'yes' and m is not None:
+            m = 1 - m
 
         # Calculate the base opacity
         if blend_if_channel == 'gray':
             if blend_if_layer == 'bottom':
-                luminosity = 0.2126 * bottom_layer[..., 0] + 0.7152 * bottom_layer[..., 1] + 0.0722 * bottom_layer[..., 2]
+                luminosity = 0.2126 * b[..., 0] + 0.7152 * b[..., 1] + 0.0722 * b[..., 2]
             else:  # blend_if_layer == 'top'
-                luminosity = 0.2126 * top_layer[..., 0] + 0.7152 * top_layer[..., 1] + 0.0722 * top_layer[..., 2]
-            base_opacity = calculate_opacity(luminosity, start_rise, end_rise, start_fall, end_fall)
+                luminosity = 0.2126 * t[..., 0] + 0.7152 * t[..., 1] + 0.0722 * t[..., 2]
+            base_opacity = calculate_opacity(luminosity, start_rise_adjusted, end_rise_adjusted, start_fall_adjusted, end_fall_adjusted)
         else:
             channel_index = {'red': 0, 'green': 1, 'blue': 2}[blend_if_channel]
             if blend_if_layer == 'bottom':
-                base_opacity = calculate_opacity(bottom_layer[..., channel_index], start_rise, end_rise, start_fall, end_fall)
+                base_opacity = calculate_opacity(b[..., channel_index], start_rise_adjusted, end_rise_adjusted, start_fall_adjusted, end_fall_adjusted)
             else:  # blend_if_layer == 'top'
-                base_opacity = calculate_opacity(top_layer[..., channel_index], start_rise, end_rise, start_fall, end_fall)
+                base_opacity = calculate_opacity(t[..., channel_index], start_rise_adjusted, end_rise_adjusted, start_fall_adjusted, end_fall_adjusted)
 
         # Apply the mask and the opacity parameter
-        if mask is not None:
-            final_opacity = base_opacity * mask * opacity
+        if m is not None:
+            final_opacity = base_opacity * m * opacity
         else:
             final_opacity = base_opacity * opacity
 
         # Composite the top_layer onto the bottom_layer
-        new_image = final_opacity[..., None] * top_layer + (1.0 - final_opacity[..., None]) * bottom_layer
+        new_image = final_opacity[..., None] * t + (1.0 - final_opacity[..., None]) * b
 
         return (new_image, base_opacity)
+
+
+def calculate_opacity(t, start_rise, end_rise, start_fall, end_fall):
+    # Values to the left of start_rise and to the right of end_fall return 0
+    opacity = torch.zeros_like(t)
+    # Apply cubic-bezier curve between start_rise and end_rise
+    rise_mask = (t > start_rise) & (t < end_rise)
+    t_normalized = (t[rise_mask] - start_rise) / (end_rise - start_rise)
+    opacity[rise_mask] = 3 * t_normalized**2 - 2 * t_normalized**3
+    # Values between end_rise and start_fall return 1
+    opacity[(t >= end_rise) & (t <= start_fall)] = 1.0
+    # Apply cubic-bezier curve between start_fall and end_fall
+    fall_mask = (t > start_fall) & (t < end_fall)
+    t_normalized = (t[fall_mask] - start_fall) / (end_fall - start_fall)
+    opacity[fall_mask] = 1 - (3 * t_normalized**2 - 2 * t_normalized**3)
+    return opacity

@@ -12,39 +12,207 @@ from colorsys import rgb_to_hsv, hsv_to_rgb
 from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
+from .resize import match_sizes
+
+modes_8bit = ["difference", "exclusion", "normal", "screen", "soft light", "lighten", 
+              "lighter color", "dodge", "color dodge", "linear burn","linear dodge (add)",
+              "linear light", "vivid light"," pin light", "hard mix", "darken", "darker color",
+              "multiply", "color burn", "hard light", "subtract", "grain extract", "grain merge", 
+              "divide", "overlay", "hue", "saturation", "color", "luminosity"]
+
+class BlendModes:
+    
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        
+        return {
+            "required": {
+                "backdrop": ("IMAGE",),
+                "source": ("IMAGE",),
+                "blend_mode": (["normal", "dissolve", "darken", "multiply", "color burn", "linear burn", "darker color", 
+                                "lighten", "screen", "dodge","color dodge", "linear dodge (add)", "lighter color",
+                                "overlay", "soft light", "hard light", "vivid light", "linear light", "pin light", "hard mix",
+                                "difference", "exclusion", "subtract",  "divide",
+                                "hue", "saturation", "color", "luminosity", 
+                                "grain extract", "grain merge"],),
+                "opacity": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "round": 0.001, 
+                    "display": "number"}),
+                "source_adjust": (["crop", "stretch"],),
+                "invert_mask": (["yes", "no"],),
+            },
+            "optional": {
+                "mask": ("MASK",),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "do_blend"
+    CATEGORY = "Virtuoso"
+    
+    def do_blend(self, backdrop, source, blend_mode, opacity, source_adjust, invert_mask, mask=None ):
+
+        if blend_mode in modes_8bit:
+            backdrop_prepped = prep_image_8bit(backdrop)
+            source_prepped = prep_image_8bit(source, invert_mask, mask)
+            source_prepped = resize_image_8bit(backdrop_prepped, source_prepped, source_adjust)
+            blended_np = modes[blend_mode](backdrop_prepped, source_prepped, opacity)
+            final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
+            return (final_tensor,)
+        else:
+            source_prepped = handle_alpha(source, invert_mask, mask)
+            source_prepped = match_sizes(source_prepped, backdrop)
+            return (backdrop, modes[blend_mode](backdrop, source_prepped, opacity))
+        
+def handle_alpha(img, invert_mask="true", mask=None):
+
+    alpha_img = img.clone()
+
+    # Create or process mask
+    if mask is None:        
+        if alpha_img.shape[2] == 4: # If img already has an alpha channel, use it
+            alpha_channel = alpha_img[:, :, 3:4]
+        else:
+            alpha_channel = torch.full((alpha_img.shape[0], alpha_img.shape[1], 1), fill_value=1, dtype=img.dtype, device=img.device)
+    else:
+        alpha_channel = mask.clone()
+        # Add channel dimension if it doesn't exist
+        # if len(alpha_channel.shape) == 3:
+        #     alpha_channel = alpha_channel.unsqueeze(-1)
+        if invert_mask == "yes":
+            alpha_channel = 1 - alpha_channel
+
+        # Resize mask to match image dimensions
+        h, w = alpha_img.shape[:2]
+        alpha_channel = F.interpolate(mask[None, ...], size=(h, w), mode='bilinear', align_corners=False)[0]
+
+    # Ensure alpha_channel has the same number of dimensions as img
+    if len(alpha_channel.shape) < len(alpha_img.shape):
+        alpha_channel = alpha_channel.unsqueeze(-1)
+
+    # If img already has an alpha channel, replace it
+    if alpha_img.shape[2] == 4:
+        alpha_img[:, :, 3:4] = alpha_channel
+    else:
+        # Concatenate the input image with the alpha channel along the channel dimension
+        alpha_img = torch.cat((alpha_img, alpha_channel), dim=2)
+
+    return alpha_img
+
+def prep_image_8bit(img, invert_mask="true", mask=None):
+    # Remove batch dimension if it exists
+    if len(img.shape) == 4:
+        img = img.squeeze(0)
+
+    # Convert image from 0-1 to 0-255 data
+    img = img * 255
+
+    # Create or process mask
+    if mask is None:
+        # If img already has an alpha channel, use it
+        if img.shape[2] == 4:
+            alpha_channel = img[:, :, 3:4]
+        else:
+            # Create a new tensor with the same height and width as the input image
+            # and a single channel filled with the maximum value (representing full opacity)
+            alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
+    else:
+        # Add channel dimension if it doesn't exist
+        if len(mask.shape) == 2:
+            mask = mask.unsqueeze(-1)
+
+        # Convert mask from 0-1 to 0-255 data
+        mask = mask * 255
+
+        # Invert mask if necessary
+        if invert_mask == "yes":
+            mask = 255 - mask
+
+        # Resize mask to match image dimensions
+        h, w = img.shape[:2]
+        mask = F.interpolate(mask[None, ...], size=(h, w), mode='bilinear', align_corners=False)[0]
+
+        # Squeeze the mask tensor to remove the extra dimension at the beginning
+        mask = mask.squeeze(0)
+        alpha_channel = mask
+
+    # Ensure alpha_channel has the same number of dimensions as img
+    if len(alpha_channel.shape) < len(img.shape):
+        alpha_channel = alpha_channel.unsqueeze(-1)
+
+    # If img already has an alpha channel, replace it
+    if img.shape[2] == 4:
+        img[:, :, 3:4] = alpha_channel
+    else:
+        # Concatenate the input image with the alpha channel along the channel dimension
+        img = torch.cat((img, alpha_channel), dim=2)
+
+    return img.numpy()
+    
+def resize_image_8bit(background, source, method):
+    # Convert numpy arrays to PIL Images
+    # Convert the data type to uint8 before converting to PIL Image
+    background = Image.fromarray(background.astype(np.uint8))
+    source = Image.fromarray(source.astype(np.uint8))
+
+    # Get the size of the background image
+    bg_width, bg_height = background.size
+
+    if method == 'stretch':
+        resized_source = source.resize((bg_width, bg_height))
+    else:
+        src_ratio = source.width / source.height
+        bg_ratio = bg_width / bg_height
+        if src_ratio > bg_ratio:
+            new_height = bg_height
+            new_width = int(new_height * src_ratio)
+        else:
+            new_width = bg_width
+            new_height = int(new_width / src_ratio)
+        resized_source = source.resize((new_width, new_height))
+
+        # Calculate the area to crop
+        left = (resized_source.width - bg_width) / 2
+        top = (resized_source.height - bg_height) / 2
+        right = (resized_source.width + bg_width) / 2
+        bottom = (resized_source.height + bg_height) / 2
+
+        # Crop the resized source image
+        resized_source = resized_source.crop((left, top, right, bottom))
+
+    # Convert the resized source image back to a numpy array
+    # Convert the data type back to float before returning
+    resized_source = np.array(resized_source, dtype=np.float32)
+
+    return resized_source
 
 def dissolve(backdrop, source, opacity):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3] / 255
 
-    # Calculate the transparency of each pixel in the source image
-    transparency = opacity * source_alpha_norm
-
-    # Generate a random matrix with the same shape as the source image
-    random_matrix = np.random.random(source.shape[:2])
-
-    # Create a mask where the random values are less than the transparency
+    transparency = opacity * source[..., 3]
+    random_matrix = torch.rand_like(transparency)
     mask = random_matrix < transparency
 
     # Use the mask to select pixels from the source or backdrop
-    blend = np.where(mask[..., None], source_norm, backdrop_norm)
+    blend = torch.where(mask[..., None], source[..., :3], backdrop[..., :3])
 
     # Apply the alpha channel of the source image to the blended image
-    new_rgb = (1 - source_alpha_norm[..., None]) * backdrop_norm + source_alpha_norm[..., None] * blend
+    new_rgb = (1 - source[..., 3, None]) * backdrop[..., :3] + source[..., 3, None] * blend
 
     # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
+    new_rgb = torch.clamp(new_rgb, 0, 1)
 
     # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
+    new_alpha = torch.max(backdrop[..., 3], source[..., 3])
 
     # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
+    result = torch.cat((new_rgb, new_alpha[..., None]), dim=-1)
 
     return result
 
@@ -237,149 +405,3 @@ modes = {
     "color": color,
     "luminosity": luminance
 }
-
-class BlendModes:
-    
-    def __init__(self):
-        pass
-    
-    @classmethod
-    def INPUT_TYPES(s):
-        
-        return {
-            "required": {
-                "backdrop": ("IMAGE",),
-                "source": ("IMAGE",),
-                "blend_mode": (["normal", "dissolve", "darken", "multiply", "color burn", "linear burn", "darker color", 
-                                "lighten", "screen", "dodge","color dodge", "linear dodge (add)", "lighter color",
-                                "overlay", "soft light", "hard light", "vivid light", "linear light", "pin light", "hard mix",
-                                "difference", "exclusion", "subtract",  "divide",
-                                "hue", "saturation", "color", "luminosity", 
-                                "grain extract", "grain merge"],),
-                "opacity": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 1.0,
-                    "step": 0.01,
-                    "round": 0.001, 
-                    "display": "number"}),
-                "source_adjust": (["crop", "stretch"],),
-                "invert_mask": (["yes", "no"],),
-            },
-            "optional": {
-                "mask": ("MASK",),
-            }
-        }
-
-    RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "do_blend"
-    CATEGORY = "Virtuoso"
-    
-    def do_blend(self, backdrop, source, blend_mode, opacity, source_adjust, invert_mask, mask=None ):
-
-        # Ensure images are in the correct form and data type
-        backdrop_prepped = prep_image(backdrop)
-        source_prepped = prep_image(source, invert_mask, mask)
-
-        # Size source image to backdrop image, according to preference
-        source_prepped = resize_image(backdrop_prepped, source_prepped, source_adjust)
-
-        # Apply the blend mode
-        blended_np = modes[blend_mode](backdrop_prepped, source_prepped, opacity)
-
-        # return the image to Pytorch with proper shape
-        final_tensor = (torch.from_numpy(blended_np / 255)).unsqueeze(0)
-        
-        return (final_tensor,)
-
-def prep_image(img, invert_mask="true", mask=None):
-    # Remove batch dimension if it exists
-    if len(img.shape) == 4:
-        img = img.squeeze(0)
-
-    # Convert image from 0-1 to 0-255 data
-    img = img * 255
-
-    # Create or process mask
-    if mask is None:
-        # If img already has an alpha channel, use it
-        if img.shape[2] == 4:
-            alpha_channel = img[:, :, 3:4]
-        else:
-            # Create a new tensor with the same height and width as the input image
-            # and a single channel filled with the maximum value (representing full opacity)
-            alpha_channel = torch.full((img.shape[0], img.shape[1], 1), fill_value=255, dtype=img.dtype, device=img.device)
-    else:
-        # Add channel dimension if it doesn't exist
-        if len(mask.shape) == 2:
-            mask = mask.unsqueeze(-1)
-
-        # Convert mask from 0-1 to 0-255 data
-        mask = mask * 255
-
-        # Invert mask if necessary
-        if invert_mask == "yes":
-            mask = 255 - mask
-
-        # Resize mask to match image dimensions
-        h, w = img.shape[:2]
-        mask = F.interpolate(mask[None, ...], size=(h, w), mode='bilinear', align_corners=False)[0]
-
-        # Squeeze the mask tensor to remove the extra dimension at the beginning
-        mask = mask.squeeze(0)
-        alpha_channel = mask
-
-    # Ensure alpha_channel has the same number of dimensions as img
-    if len(alpha_channel.shape) < len(img.shape):
-        alpha_channel = alpha_channel.unsqueeze(-1)
-
-    # If img already has an alpha channel, replace it
-    if img.shape[2] == 4:
-        img[:, :, 3:4] = alpha_channel
-    else:
-        # Concatenate the input image with the alpha channel along the channel dimension
-        img = torch.cat((img, alpha_channel), dim=2)
-
-    return img.numpy()
-    
-def resize_image(background, source, method):
-    # Convert numpy arrays to PIL Images
-    # Convert the data type to uint8 before converting to PIL Image
-    background = Image.fromarray(background.astype(np.uint8))
-    source = Image.fromarray(source.astype(np.uint8))
-
-    # Get the size of the background image
-    bg_width, bg_height = background.size
-
-    if method == 'stretch':
-        # Resize the source image to match the size of the background image
-        resized_source = source.resize((bg_width, bg_height))
-
-    elif method == 'crop':
-        src_ratio = source.width / source.height
-        bg_ratio = bg_width / bg_height
-        if src_ratio > bg_ratio:
-            new_height = bg_height
-            new_width = int(new_height * src_ratio)
-        else:
-            new_width = bg_width
-            new_height = int(new_width / src_ratio)
-        resized_source = source.resize((new_width, new_height))
-
-        # Calculate the area to crop
-        left = (resized_source.width - bg_width) / 2
-        top = (resized_source.height - bg_height) / 2
-        right = (resized_source.width + bg_width) / 2
-        bottom = (resized_source.height + bg_height) / 2
-
-        # Crop the resized source image
-        resized_source = resized_source.crop((left, top, right, bottom))
-
-    else:
-        raise ValueError("Invalid method. Choose either 'stretch' or 'crop'.")
-
-    # Convert the resized source image back to a numpy array
-    # Convert the data type back to float before returning
-    resized_source = np.array(resized_source, dtype=np.float32)
-
-    return resized_source
