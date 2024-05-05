@@ -8,17 +8,14 @@ from PIL import Image
 import numpy as np
 import torch
 import torch.nn.functional as F
-from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
-                        addition, darken_only, multiply, hard_light,  \
-                        grain_extract, grain_merge, divide, overlay
+from blend_modes import difference, soft_light, lighten_only, dodge,   \
+                        darken_only, hard_light,  \
+                        grain_extract, grain_merge, overlay
 from .resize import match_sizes
 from .hsv import rgb_to_hsv, hsv_to_rgb
 
-modes_8bit = ["difference", "normal", "screen", "soft light", "lighten", 
-              "dodge",  "linear dodge (add)",
-              "darken", 
-              "multiply", "hard light", "grain extract", "grain merge", 
-              "divide", "overlay"]
+modes_8bit = ["difference", "soft light", "lighten", 
+              "dodge", "darken", "hard light", "grain extract", "grain merge",  "overlay"]
 
 class BlendModes:
     
@@ -223,7 +220,11 @@ def hsv(backdrop, source, opacity, channel):
     elif channel == "luminance":
         new_hsv[:, :, :, 2:3] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, :, 2:3] + opacity * source_alpha * source_hsv[:, :, :, 2:3]
     elif channel == "hue":
-        new_hsv[:, :, :, 0:1] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, :, 0:1] + opacity * source_alpha * source_hsv[:, :, :, 0:1]
+        new_hue = source_hsv[:, :, :, 0:1]
+        mask = (source_hsv[:, :, :, 1:2] == 0) # if sat == 0, sat = 0 in new image
+        new_saturation = torch.where(mask, source_hsv[:, :, :, 1:2], backdrop_hsv[:, :, :, 1:2])
+        new_hsv[:, :, :, 0:1] = new_hue
+        new_hsv[:, :, :, 1:2] = new_saturation
     elif channel == "color":
         new_hsv[:, :, :, :2] = (1 - opacity * source_alpha) * backdrop_hsv[:, :, :, :2] + opacity * source_alpha * source_hsv[:, :, :, :2]
     
@@ -279,6 +280,16 @@ def simple_mode(backdrop, source, opacity, mode):
     
     if mode == "linear_burn":
         blend = backdrop + source - 1   
+    elif mode == "normal":
+        blend = source
+    elif mode == "addition":
+        blend = source + backdrop
+    elif mode == "multiply":
+        blend = source * backdrop
+    elif mode == "divide":
+        blend = backdrop / source
+    elif mode == "screen":
+        blend = 1 - (1-source)*(1-backdrop)
     elif mode == "linear_light":
         blend = backdrop + (2 * source) - 1
     elif mode == "color_dodge":
@@ -308,6 +319,14 @@ def simple_mode(backdrop, source, opacity, mode):
     new_img = torch.cat((rgb_channels, backdrop_alpha), dim=-1)
     return new_img
 
+def normal(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "normal")
+def multiply(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "multiply")
+def divide(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "divide")
+def addition(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "addition")
 def linear_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "linear_light")
 def vivid_light(backdrop, source, opacity):
@@ -326,6 +345,8 @@ def exclusion(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "exclusion")
 def subtract(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "subtract")
+def screen(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "screen")
 
 modes = {
     "difference": difference, 
