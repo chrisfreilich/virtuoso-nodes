@@ -8,15 +8,16 @@ from PIL import Image
 import numpy as np
 import torch
 import torch.nn.functional as F
-from colorsys import rgb_to_hsv, hsv_to_rgb
+#from colorsys import rgb_to_hsv, hsv_to_rgb
 from blend_modes import difference, normal, screen, soft_light, lighten_only, dodge,   \
                         addition, darken_only, multiply, hard_light,  \
                         grain_extract, grain_merge, divide, overlay
 from .resize import match_sizes
+from .hsv import rgb_to_hsv, hsv_to_rgb
 
 modes_8bit = ["difference", "normal", "screen", "soft light", "lighten", 
-              "lighter color", "dodge",  "linear dodge (add)",
-              "darken", "darker color",
+              "dodge",  "linear dodge (add)",
+              "darken", 
               "multiply", "hard light", "grain extract", "grain merge", 
               "divide", "overlay", "hue", "saturation", "color", "luminosity"]
 
@@ -259,40 +260,26 @@ def color(backdrop, source, opacity):
     return hsv(backdrop, source, opacity, "color")
 
 def darker_lighter_color(backdrop, source, opacity, type):
-    # Normalize the RGB and alpha values to 0-1
-    backdrop_norm = backdrop[:, :, :3] / 255
-    source_norm = source[:, :, :3] / 255
-    source_alpha_norm = source[:, :, 3] / 255
 
     # Convert RGB to HSV
-    backdrop_hsv = np.array([rgb_to_hsv(*rgb) for row in backdrop_norm for rgb in row]).reshape(backdrop.shape[:2] + (3,))
-    source_hsv = np.array([rgb_to_hsv(*rgb) for row in source_norm for rgb in row]).reshape(source.shape[:2] + (3,))
+    backdrop_hsv = rgb_to_hsv(backdrop)
+    source_hsv = rgb_to_hsv(source)
 
     # Create a mask where the value (brightness) of the source image is less than the value of the backdrop image
     if type == "dark":
-        mask = source_hsv[:, :, 2] < backdrop_hsv[:, :, 2]
+        mask = source_hsv[:, :, :, 2] < backdrop_hsv[:, :, :, 2]
     else:
-        mask = source_hsv[:, :, 2] > backdrop_hsv[:, :, 2]
+        mask = source_hsv[:, :, :, 2] > backdrop_hsv[:, :, :, 2]
 
     # Use the mask to select pixels from the source or backdrop
-    blend = np.where(mask[..., None], source_norm, backdrop_norm)
+    blend = torch.where(mask.unsqueeze(-1), source, backdrop)
 
-    # Apply the alpha channel of the source image to the blended image
-    new_rgb = (1 - source_alpha_norm[..., None] * opacity) * backdrop_norm + source_alpha_norm[..., None] * opacity * blend
-
-    # Ensure the RGB values are within the valid range
-    new_rgb = np.clip(new_rgb, 0, 1)
-
-    # Convert the RGB values back to 0-255
-    new_rgb = new_rgb * 255
-
-    # Calculate the new alpha value by taking the maximum of the backdrop and source alpha channels
-    new_alpha = np.maximum(backdrop[:, :, 3], source[:, :, 3])
-
-    # Create a new RGBA image with the calculated RGB and alpha values
-    result = np.dstack((new_rgb, new_alpha))
-
-    return result
+    source_alpha = source[:, :, :, 3:4]
+    new_rgb = (1 - source_alpha * opacity) * backdrop + source_alpha * opacity * blend
+    rgb_channels = new_rgb[:, :, :, :3]
+    backdrop_alpha = backdrop[:, :, :, 3:4]
+    new_img = torch.cat((rgb_channels, backdrop_alpha), dim=-1)
+    return new_img
 
 def darker_color(backdrop, source, opacity):
     return darker_lighter_color(backdrop, source, opacity, "dark")
@@ -328,7 +315,6 @@ def simple_mode(backdrop, source, opacity, mode):
 
     source_alpha = source[:, :, :, 3:4]
     new_rgb = (1 - source_alpha * opacity) * backdrop + source_alpha * opacity * blend
-    #new_rgb = torch.clamp(new_rgb, 0, 1)
     rgb_channels = new_rgb[:, :, :, :3]
     backdrop_alpha = backdrop[:, :, :, 3:4]
     new_img = torch.cat((rgb_channels, backdrop_alpha), dim=-1)
