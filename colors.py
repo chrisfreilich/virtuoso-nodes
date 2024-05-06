@@ -13,7 +13,7 @@ from .hsv import rgb_to_hsv, hsv_to_rgb
 
 class SolidColorRGB():
     NAME = "Solid Color RGB"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Solid Color"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ('solid color image',)
     FUNCTION = "get_solid_color"
@@ -76,7 +76,7 @@ class SolidColorRGB():
 
 class SolidColorHSV():
     NAME = "Solid Color HSV"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Solid Color"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ('solid color image',)
     FUNCTION = "get_solid_color"
@@ -128,7 +128,7 @@ class SolidColorHSV():
 
 class SolidColor():
     NAME = "Solid Color"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Solid Color"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ('solid color image',)
     FUNCTION = "get_solid_color"
@@ -196,7 +196,7 @@ class SplitRGB():
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
     RETURN_NAMES = ('red', 'green', 'blue',)
     FUNCTION = "do_split"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Channels"
     
     def do_split(self, image):
         # Create tensors for red, green, and blue channels
@@ -230,7 +230,7 @@ class MergeRGB():
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_merge"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Channels"
     
     def do_merge(self, red, green, blue):
        
@@ -247,7 +247,7 @@ class MergeRGB():
 
 class ColorBalance():
     NAME = "Color Balance"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_color_balance"
 
@@ -333,7 +333,7 @@ class ColorBalance():
 
 class ColorBalanceAdvanced():
     NAME = "Color Balance Advanced"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_color_balance"
 
@@ -419,7 +419,7 @@ def color_balance(img, shadows, midtones, highlights, shadow_center=0.15, midton
 
 class BlackAndWhite():
     NAME = "Black and White"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_black_and_white"
 
@@ -529,7 +529,7 @@ class BlackAndWhite():
 
 class HueSatAdvanced():
     NAME = "Hue/Saturation Advanced"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     RETURN_TYPES = ("IMAGE", "MASK")
     FUNCTION = "do_hue_sat"
 
@@ -621,7 +621,7 @@ class HueSatAdvanced():
 
 class HueSat():
     NAME = "Hue/Saturation"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     RETURN_TYPES = ("IMAGE", "MASK")
     FUNCTION = "do_hue_sat"
 
