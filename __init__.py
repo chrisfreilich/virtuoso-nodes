@@ -7,7 +7,7 @@ from .colors import ColorBalance, ColorBalanceAdvanced
 from .colors import BlackAndWhite
 from .colors import HueSatAdvanced, HueSat
 from .colors import SolidColorRGB, SolidColorHSV, SolidColor
-from .blur import MotionBlur
+from .blur import MotionBlur, LensBlur, GaussianBlur
 
 NODE_CLASS_MAPPINGS = {
     "BlackAndWhite": BlackAndWhite,
@@ -18,7 +18,9 @@ NODE_CLASS_MAPPINGS = {
     "HueSat": HueSat,
     "HueSatAdvanced": HueSatAdvanced,
     "Levels": Levels,
-    "MotionBlur" :MotionBlur,
+    "LensBlur": LensBlur,
+    "MotionBlur": MotionBlur,
+    "GaussianBlur": GaussianBlur,
     "MergeRGB": MergeRGB,
     "SplitRGB": SplitRGB,
     "SelectiveColor": SelectiveColor,
@@ -36,7 +38,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "HueSat": "Hue/Saturation",
     "HueSatAdvanced": "Hue/Saturation Advanced",
     "Levels": "Levels",
+    "LensBlur": "Lens Blur",
     "MotionBlur":"Motion Blur",
+    "GaussianBlur": "Gaussian Blur",
     "MergeRGB": "Merge RGB",
     "SplitRGB": "Split RGB",
     "SelectiveColor": "Selective Color",
