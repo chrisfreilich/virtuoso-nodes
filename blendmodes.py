@@ -8,14 +8,11 @@ from PIL import Image
 import numpy as np
 import torch
 import torch.nn.functional as F
-from blend_modes import lighten_only, dodge,   \
-                        darken_only,  \
-                        grain_extract, grain_merge, overlay
+from blend_modes import grain_extract, grain_merge
 from .resize import match_sizes
 from .hsv import rgb_to_hsv, hsv_to_rgb
 
-modes_8bit = ["lighten", 
-              "dodge", "darken", "grain extract", "grain merge",  "overlay"]
+modes_8bit = ["grain extract", "grain merge"]
 
 class BlendModes:
     
@@ -30,7 +27,7 @@ class BlendModes:
                 "backdrop": ("IMAGE",),
                 "source": ("IMAGE",),
                 "blend_mode": (["normal", "dissolve", "darken", "multiply", "color burn", "linear burn", "darker color", 
-                                "lighten", "screen", "dodge","color dodge", "linear dodge (add)", "lighter color",
+                                "lighten", "screen", "color dodge", "linear dodge (add)", "lighter color",
                                 "overlay", "soft light", "hard light", "vivid light", "linear light", "pin light", "hard mix",
                                 "difference", "exclusion", "subtract",  "divide",
                                 "hue", "saturation", "color", "luminosity", 
@@ -92,7 +89,9 @@ def handle_alpha(img, invert_mask="true", mask=None):
     if alpha_img.shape[3] == 4:    # If img already has an alpha channel, replace it
         alpha_img[:, :, 3:4] = alpha_channel
     else:
-        alpha_img = torch.cat((alpha_img, alpha_channel), dim=3)
+        batch_size = alpha_img.shape[0]
+        alpha_channel_repeated = alpha_channel.repeat(batch_size, 1, 1, 1)
+        alpha_img = torch.cat((alpha_img, alpha_channel_repeated), dim=3)
 
     return alpha_img
 
@@ -280,6 +279,14 @@ def simple_mode(backdrop, source, opacity, mode):
     
     if mode == "linear_burn":
         blend = backdrop + source - 1  
+    elif mode == "darken_only":
+        rgb_min = torch.min(backdrop[..., :3], source[..., :3]) 
+        alpha = backdrop[..., 3:]
+        blend = torch.cat([rgb_min, alpha], dim=-1) 
+    elif mode == "lighten_only":
+        rgb_min = torch.max(backdrop[..., :3], source[..., :3]) 
+        alpha = backdrop[..., 3:]
+        blend = torch.cat([rgb_min, alpha], dim=-1) 
     elif mode == "difference":
         blend = abs(backdrop - source)
     elif mode == "normal":
@@ -303,7 +310,9 @@ def simple_mode(backdrop, source, opacity, mode):
     elif mode == "subtract":
         blend = backdrop - source
     elif mode == "soft_light":
-        blend = torch.where(source <= 0.5, 2 * backdrop * source + backdrop * backdrop * (1 - 2 * source), 2 * backdrop * (1 - source) + torch.sqrt(backdrop) * ((2 * source) - 1))
+        blend = torch.where(source <= 0.5, 2 * backdrop * source + backdrop * backdrop * (1 - 2 * source), 2 * backdrop * (1 - source) + torch.sqrt(backdrop) * ((2 * source) - 1))        
+    elif mode == "overlay":
+        blend = torch.where(backdrop <= 0.5, 2 * backdrop * source, 1 - 2 * (1 - backdrop) * (1 - source))
     elif mode == "hard_light":
         blend = torch.where(source <= 0.5, 2 * source * backdrop, 1 - 2 * (1 - backdrop) * (1 - source))
     elif mode == "vivid_light":
@@ -359,6 +368,12 @@ def soft_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "soft_light")
 def hard_light(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "hard_light")
+def overlay(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "overlay")
+def darken_only(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "darken_only")
+def lighten_only(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "lighten_only")
 
 modes = {
     "difference": difference, 
@@ -369,7 +384,7 @@ modes = {
     "soft light": soft_light, 
     "lighten": lighten_only, 
     "lighter color": lighter_color,
-    "dodge": dodge,
+    "dodge": color_dodge,
     "color dodge": color_dodge,
     "linear burn": linear_burn,
     "linear dodge (add)": addition,
