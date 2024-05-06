@@ -8,14 +8,14 @@ from PIL import Image
 import numpy as np
 import torch
 import torch.nn.functional as F
-from blend_modes import difference, soft_light, lighten_only, dodge,   \
-                        darken_only, hard_light,  \
+from blend_modes import lighten_only, dodge,   \
+                        darken_only,  \
                         grain_extract, grain_merge, overlay
 from .resize import match_sizes
 from .hsv import rgb_to_hsv, hsv_to_rgb
 
-modes_8bit = ["difference", "soft light", "lighten", 
-              "dodge", "darken", "hard light", "grain extract", "grain merge",  "overlay"]
+modes_8bit = ["lighten", 
+              "dodge", "darken", "grain extract", "grain merge",  "overlay"]
 
 class BlendModes:
     
@@ -279,7 +279,9 @@ def lighter_color(backdrop, source, opacity):
 def simple_mode(backdrop, source, opacity, mode):
     
     if mode == "linear_burn":
-        blend = backdrop + source - 1   
+        blend = backdrop + source - 1  
+    elif mode == "difference":
+        blend = abs(backdrop - source)
     elif mode == "normal":
         blend = source
     elif mode == "addition":
@@ -300,6 +302,10 @@ def simple_mode(backdrop, source, opacity, mode):
         blend = backdrop + source - (2 * backdrop * source)
     elif mode == "subtract":
         blend = backdrop - source
+    elif mode == "soft_light":
+        blend = torch.where(source <= 0.5, 2 * backdrop * source + backdrop * backdrop * (1 - 2 * source), 2 * backdrop * (1 - source) + torch.sqrt(backdrop) * ((2 * source) - 1))
+    elif mode == "hard_light":
+        blend = torch.where(source <= 0.5, 2 * source * backdrop, 1 - 2 * (1 - backdrop) * (1 - source))
     elif mode == "vivid_light":
         blend = torch.where(source <= 0.5, backdrop / (1 - 2 * source), 1 - (1 -backdrop) / (2 * source - 0.5) ) 
     elif mode == "pin_light":
@@ -321,6 +327,8 @@ def simple_mode(backdrop, source, opacity, mode):
 
 def normal(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "normal")
+def difference(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "difference")
 def multiply(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "multiply")
 def divide(backdrop, source, opacity):
@@ -347,6 +355,10 @@ def subtract(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "subtract")
 def screen(backdrop, source, opacity):
     return simple_mode(backdrop, source, opacity, "screen")
+def soft_light(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "soft_light")
+def hard_light(backdrop, source, opacity):
+    return simple_mode(backdrop, source, opacity, "hard_light")
 
 modes = {
     "difference": difference, 
