@@ -42,29 +42,7 @@ class MotionBlur:
     CATEGORY = "Virtuoso/Blur"
 
     def do_blur(self, image, size, angle):
-        
-        if image.shape[3] == 4:
-            original_alpha = image[:, :, :, 3]
-            image = image[:, :, :, :3]
-        else:
-            original_alpha = None
-        
-        blurred_images = []
-        for img in image:            
-            img_cv2 = img.cpu().numpy()
-            img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
-            blurred_img_cv2 = motion_blur(img_cv2, size=size, angle=angle)
-            blurred_img = cv2.cvtColor(blurred_img_cv2, cv2.COLOR_BGR2RGB)
-            blurred_img = torch.from_numpy(blurred_img).to(image.device)
-            blurred_images.append(blurred_img)
-
-        final_tensor = torch.stack(blurred_images)
-        
-        if original_alpha is not None:
-            final_tensor = torch.cat((final_tensor, original_alpha.unsqueeze(3)), dim=3)
-        
-        return (final_tensor, )
-    
+        return blur(image, "motion", size=size, angle=angle)  
 
 class LensBlur:
     
@@ -106,30 +84,7 @@ class LensBlur:
     CATEGORY = "Virtuoso/Blur"
 
     def do_blur(self, image, radius, components, exposure_gamma):
-        
-        if image.shape[3] == 4:
-            original_alpha = image[:, :, :, 3]
-            image = image[:, :, :, :3]
-        else:
-            original_alpha = None
-        
-        blurred_images = []
-        for img in image:            
-            img_cv2 = img.cpu().numpy()
-            img_cv2 = (img_cv2 * 255).astype(np.uint8)  # Convert to uint8
-            img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
-            blurred_img_cv2 = lens_blur(img_cv2, radius=radius, components=components, exposure_gamma=exposure_gamma)
-            blurred_img = cv2.cvtColor(blurred_img_cv2, cv2.COLOR_BGR2RGB)
-            blurred_img = torch.from_numpy(blurred_img.astype(np.float32) / 255.0).to(image.device)  # Convert back to float32
-            blurred_images.append(blurred_img)
-
-        final_tensor = torch.stack(blurred_images)
-        
-        if original_alpha is not None:
-            final_tensor = torch.cat((final_tensor, original_alpha.unsqueeze(3)), dim=3)
-        
-        return (final_tensor, )
-
+        return blur(image, "lens", radius=radius, components=components, exposure_gamma=exposure_gamma)
 
 class GaussianBlur:
     
@@ -157,6 +112,9 @@ class GaussianBlur:
     CATEGORY = "Virtuoso/Blur"
 
     def do_blur(self, image, amount):
+        return blur(image, "gaussian", amount=amount)
+
+def blur(image, type, amount=100, radius=5, components=4, exposure_gamma=2, size=100, angle=0):
         
         if image.shape[3] == 4:
             original_alpha = image[:, :, :, 3]
@@ -169,7 +127,12 @@ class GaussianBlur:
             img_cv2 = img.cpu().numpy()
             img_cv2 = (img_cv2 * 255).astype(np.uint8)  # Convert to uint8
             img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
-            blurred_img_cv2 = gaussian_blur(img_cv2, amount)
+            if type == "gaussian":
+                blurred_img_cv2 = gaussian_blur(img_cv2, amount)
+            elif type == "lens":
+                blurred_img_cv2 = lens_blur(img_cv2, radius=radius, components=components, exposure_gamma=exposure_gamma)
+            elif type == "motion":
+                blurred_img_cv2 = motion_blur(img_cv2, size=size, angle=angle)
             blurred_img = cv2.cvtColor(blurred_img_cv2, cv2.COLOR_BGR2RGB)
             blurred_img = torch.from_numpy(blurred_img.astype(np.float32) / 255.0).to(image.device)  # Convert back to float32
             blurred_images.append(blurred_img)
