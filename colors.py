@@ -783,7 +783,10 @@ def adjust_hue(hue, hue_offset):
     new_hue = (hue + hue_offset_normalized) % 1.0
     return new_hue
 
-def adjust_lightness(image_hsv, lightness_offset):
+def adjust_lightness(image, lightness_offset):
+    
+    image_hsv = image.clone()
+
     # Map lightness_offset to [-1, 1]
     offset = lightness_offset / 100.0
 
