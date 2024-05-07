@@ -6,7 +6,6 @@
 """
 import torch
 
-
 class Levels:
     
     def __init__(self):
@@ -59,7 +58,7 @@ class Levels:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_levels"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
 
     def do_levels(self, image, channel, input_black_point, input_gamma, input_white_point, output_black_point, output_white_point):
         """

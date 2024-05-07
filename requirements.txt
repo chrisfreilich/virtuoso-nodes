@@ -3,3 +3,5 @@ blend_modes
 Pillow
 torch
 scipy
+cv2
+blurgenerator

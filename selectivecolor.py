@@ -56,7 +56,7 @@ class SelectiveColor:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "do_selectivecolor"
-    CATEGORY = "Virtuoso"
+    CATEGORY = "Virtuoso/Adjustment"
     
     def do_selectivecolor(self, image, color_range, cyan, magenta, yellow, black, method):
         
