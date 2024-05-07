@@ -222,6 +222,60 @@ To use this node well, you need to be aware of where the colors are placed on th
 
 <br>
   
+## Blur Nodes
+
+Nodes to blur the image in various ways.
+
+### Motion Blur / Motion Blur with Depth Map
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/51258c6e-2cce-4535-a79d-428efe9e145f)
+
+These two nodes apply motion blur to the image. The Motion Blur with Depth Map takes a depth map image which is used to apply the blur selectively. The darker areas in the depth map will be blurred less, and the lighter areas will be blurred more.
+
+### Node input controls:
+
+- **size**: The strength of the blur  (Motion Blur node only)
+- **angle**: Angle of motion for the blur
+- **num_layers**: How many levels of depth are calculated for the blur. More layers creates a smoother blur, but can add a lot of time. (Motion Blur with Depth Map node only)
+- **min_blur**: The blur percentage of the darkest area of the depth map. (Motion Blur with Depth Map node only)
+- **max_blur**: The blur percentage of the lightest area of the depth map. (Motion Blur with Depth Map node only)
+<br>
+  
+
+### Lens Blur / Lens Blur with Depth Map
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/63f80c61-f67e-4d6c-9e7a-01dbfc3722bc)
+
+These two nodes apply lens blur to the image. The Lens Blur with Depth Map takes a depth map image which is used to apply the blur selectively. The darker areas in the depth map will be blurred less, and the lighter areas will be blurred more.
+
+### Node input controls:
+
+- **radius**: The strength of the blur  (Lens Blur node only)
+- **components**: The number of lens components in the virtual lens
+- **exposure_gamma**: Effects the quality of the blurred areas
+- **num_layers**: How many levels of depth are calculated for the blur. More layers creates a smoother blur, but can add a lot of time. (Lens Blur with Depth Map node only)
+- **min_blur**: The blur percentage of the darkest area of the depth map. (Lens Blur with Depth Map node only)
+- **max_blur**: The blur percentage of the lightest area of the depth map. (Lens Blur with Depth Map node only)
+<br>
+
+
+### Gaussian Blur / Gaussian Blur with Depth Map
+
+![image](https://github.com/chrisfreilich/virtuoso-nodes/assets/108036952/db1ffea6-6232-4bb3-9041-4f121db589e8)
+
+These two nodes apply lens blur to the image. The Lens Blur with Depth Map takes a depth map image which is used to apply the blur selectively. The darker areas in the depth map will be blurred less, and the lighter areas will be blurred more.
+
+### Node input controls:
+
+- **amount**: The strength of the blur  (Gaussian Blur node only)
+- **sigma**: The strength of the blur (Gaussian Blur with Depth Map node only)
+- **num_layers**: How many levels of depth are calculated for the blur. More layers creates a smoother blur, but can add a lot of time. (Gaussian Blur with Depth Map node only)
+- **min_blur**: The blur percentage of the darkest area of the depth map. (Gaussian Blur with Depth Map node only)
+- **max_blur**: The blur percentage of the lightest area of the depth map. (Gaussian Blur with Depth Map node only)
+
+<br>
+
+
 ## Solid Color Nodes
 
 Creates an image of one color.
