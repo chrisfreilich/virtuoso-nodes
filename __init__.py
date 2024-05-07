@@ -7,7 +7,7 @@ from .colors import ColorBalance, ColorBalanceAdvanced
 from .colors import BlackAndWhite
 from .colors import HueSatAdvanced, HueSat
 from .colors import SolidColorRGB, SolidColorHSV, SolidColor
-from .blur import MotionBlur, LensBlur, GaussianBlur
+from .blur import MotionBlur, LensBlur, GaussianBlur, MotionBlurDepth, LensBlurDepth, GaussianBlurDepth
 
 NODE_CLASS_MAPPINGS = {
     "BlackAndWhite": BlackAndWhite,
@@ -21,6 +21,9 @@ NODE_CLASS_MAPPINGS = {
     "LensBlur": LensBlur,
     "MotionBlur": MotionBlur,
     "GaussianBlur": GaussianBlur,
+    "LensBlurDepth": LensBlurDepth,
+    "MotionBlurDepth": MotionBlurDepth,
+    "GaussianBlurDepth": GaussianBlurDepth,
     "MergeRGB": MergeRGB,
     "SplitRGB": SplitRGB,
     "SelectiveColor": SelectiveColor,
@@ -41,6 +44,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LensBlur": "Lens Blur",
     "MotionBlur":"Motion Blur",
     "GaussianBlur": "Gaussian Blur",
+    "LensBlurDepth": "Lens Blur with Depth Map",
+    "MotionBlurDepth":"Motion Blur with Depth Map",
+    "GaussianBlurDepth": "Gaussian Blur with Depth Map",
     "MergeRGB": "Merge RGB",
     "SplitRGB": "Split RGB",
     "SelectiveColor": "Selective Color",
