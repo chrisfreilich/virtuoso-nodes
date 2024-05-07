@@ -106,9 +106,6 @@ class GaussianBlur:
                     "step": 1,
                     "round": 1, 
                     "display": "number"})
-            },
-            "optional": {
-                "depth_map": ("IMAGE",)
             }
         }
 
