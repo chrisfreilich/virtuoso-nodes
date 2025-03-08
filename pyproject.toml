@@ -2,7 +2,7 @@
 name = "virtuoso-nodes"
 description = "Photoshop type functions and adjustment layers: 30 blend modes, Selective Color, Blend If, Color Balance, Solid Color Images, Black and White, Hue/Saturation, Levels, and RGB Splitting and Merging."
 version = "1.0.0"
-license = "LICENSE"
+license = { file = "LICENSE" }
 dependencies = ["numpy", "blend_modes", "Pillow", "torch", "scipy", "cv2", "blurgenerator"]
 
 [project.urls]
